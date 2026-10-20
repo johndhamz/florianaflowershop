@@ -1,26 +1,248 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Floriana Flowers · design tokens
+   Brand palette (from the brief): Ivory #F7F0E7 · Blush #E8C9CF · Sage #77866B · Cocoa #614438
+   Derived shades are tuned for WCAG AA contrast on ivory surfaces.
+   ────────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
+  /* Brand scale ─ usable as bg-ivory, text-cocoa-700, border-blush-300, etc. */
+  --color-ivory: #f7f0e7;
+  --color-ivory-50: #fdfbf8;
+  --color-ivory-100: #faf6f0;
+  --color-ivory-200: #f7f0e7;
+  --color-ivory-300: #efe5d8;
+  --color-ivory-400: #e6d9c9;
+
+  --color-blush: #e8c9cf;
+  --color-blush-100: #f6e8eb;
+  --color-blush-200: #f0dadf;
+  --color-blush-300: #e8c9cf;
+  --color-blush-400: #d9a9b3;
+  --color-blush-500: #c58d9a;
+  --color-blush-700: #8f5260;
+
+  --color-sage: #77866b;
+  --color-sage-100: #e9ede4;
+  --color-sage-200: #d3dbcb;
+  --color-sage-300: #aab58f;
+  --color-sage-400: #8f9d80;
+  --color-sage-500: #77866b;
+  --color-sage-600: #637356;
+  --color-sage-700: #4f5c44;
+  --color-sage-800: #3c4634;
+
+  --color-cocoa: #614438;
+  --color-cocoa-100: #efe4de;
+  --color-cocoa-200: #d8c1b6;
+  --color-cocoa-300: #b4917f;
+  --color-cocoa-400: #8b6655;
+  --color-cocoa-500: #614438;
+  --color-cocoa-600: #4e362c;
+  --color-cocoa-700: #3f2b23;
+  --color-cocoa-800: #2d1e18;
+
+  /* Semantic (shadcn) tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Typography */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, "Times New Roman", serif;
+  --font-heading: var(--font-serif);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radii */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Motion ─ restrained by design */
+  --ease-bloom: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 0.6s var(--ease-bloom) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  --radius: 0.75rem;
+
+  --background: #f7f0e7; /* ivory */
+  --foreground: #3f2b23; /* cocoa-700 for body text contrast */
+  --card: #fdfbf8;
+  --card-foreground: #3f2b23;
+  --popover: #fdfbf8;
+  --popover-foreground: #3f2b23;
+
+  --primary: #614438; /* cocoa */
+  --primary-foreground: #f7f0e7;
+  --secondary: #e8c9cf; /* blush */
+  --secondary-foreground: #4e362c;
+  --accent: #e9ede4; /* sage-100 */
+  --accent-foreground: #3c4634;
+  --muted: #efe5d8; /* ivory-300 */
+  --muted-foreground: #7a6256;
+
+  --destructive: #a3473f;
+  --success: #4f5c44; /* sage-700 */
+  --warning: #9a6b2f;
+  --info: #4d6378;
+
+  --border: #e6d9c9;
+  --input: #d8c9b8;
+  --ring: #77866b; /* sage */
+
+  --chart-1: #77866b;
+  --chart-2: #e8c9cf;
+  --chart-3: #614438;
+  --chart-4: #aab58f;
+  --chart-5: #d9a9b3;
+
+  /* Admin sidebar: calm, operational */
+  --sidebar: #fdfbf8;
+  --sidebar-foreground: #3f2b23;
+  --sidebar-primary: #614438;
+  --sidebar-primary-foreground: #f7f0e7;
+  --sidebar-accent: #efe5d8;
+  --sidebar-accent-foreground: #3f2b23;
+  --sidebar-border: #e6d9c9;
+  --sidebar-ring: #77866b;
+}
+
+.dark {
+  --background: #1f1512;
+  --foreground: #f1e8de;
+  --card: #2a1d19;
+  --card-foreground: #f1e8de;
+  --popover: #2a1d19;
+  --popover-foreground: #f1e8de;
+  --primary: #e8c9cf;
+  --primary-foreground: #2d1e18;
+  --secondary: #3f2b23;
+  --secondary-foreground: #f1e8de;
+  --accent: #3c4634;
+  --accent-foreground: #e9ede4;
+  --muted: #352521;
+  --muted-foreground: #c2ad9f;
+  --destructive: #e08a82;
+  --success: #aab58f;
+  --warning: #d9a85f;
+  --info: #9db4c8;
+  --border: #4a3630;
+  --input: #4a3630;
+  --ring: #8f9d80;
+  --chart-1: #8f9d80;
+  --chart-2: #e8c9cf;
+  --chart-3: #b4917f;
+  --chart-4: #aab58f;
+  --chart-5: #d9a9b3;
+  --sidebar: #241915;
+  --sidebar-foreground: #f1e8de;
+  --sidebar-primary: #e8c9cf;
+  --sidebar-primary-foreground: #2d1e18;
+  --sidebar-accent: #352521;
+  --sidebar-accent-foreground: #f1e8de;
+  --sidebar-border: #4a3630;
+  --sidebar-ring: #8f9d80;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans antialiased;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  h1,
+  h2,
+  h3,
+  .font-heading {
+    @apply font-serif tracking-tight;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    @apply bg-blush-300 text-cocoa-700;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Storefront page gutter: 16px on phones, widening with the viewport. */
+  .container-shop {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
 }

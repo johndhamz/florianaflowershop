@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400" role="img" aria-label="Illustrative floral placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6E8EB"/>
+      <stop offset="0.55" stop-color="#E8C9CF"/>
+      <stop offset="1" stop-color="#E9EDE4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1400" fill="url(#bg)"/>
+  <g opacity="0.85">
+    <g fill="#D9A9B3"><ellipse cx="520" cy="560" rx="230" ry="140" transform="rotate(-25 520 560)"/><ellipse cx="520" cy="560" rx="230" ry="140" transform="rotate(35 520 560)"/><ellipse cx="520" cy="560" rx="230" ry="140" transform="rotate(95 520 560)"/></g>
+    <g fill="#E8C9CF"><ellipse cx="520" cy="560" rx="150" ry="90" transform="rotate(5 520 560)"/><ellipse cx="520" cy="560" rx="150" ry="90" transform="rotate(65 520 560)"/><ellipse cx="520" cy="560" rx="150" ry="90" transform="rotate(125 520 560)"/></g>
+    <circle cx="520" cy="560" r="52" fill="#F7F0E7"/>
+    <g fill="#AAB58F" opacity="0.9"><ellipse cx="860" cy="900" rx="170" ry="100" transform="rotate(-30 860 900)"/><ellipse cx="860" cy="900" rx="170" ry="100" transform="rotate(40 860 900)"/><ellipse cx="860" cy="900" rx="170" ry="100" transform="rotate(100 860 900)"/></g>
+    <g fill="#E9EDE4"><ellipse cx="860" cy="900" rx="100" ry="60" transform="rotate(10 860 900)"/><ellipse cx="860" cy="900" rx="100" ry="60" transform="rotate(70 860 900)"/><ellipse cx="860" cy="900" rx="100" ry="60" transform="rotate(130 860 900)"/></g>
+    <circle cx="860" cy="900" r="38" fill="#F7F0E7"/>
+    <path d="M520 640 C 500 820, 560 1000, 530 1300" stroke="#77866B" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path d="M860 980 C 870 1100, 840 1200, 850 1320" stroke="#77866B" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M525 880 C 430 820, 360 850, 330 920 C 420 940, 480 930, 525 880 Z" fill="#77866B" opacity="0.8"/>
+    <path d="M540 1040 C 640 990, 710 1010, 740 1080 C 650 1095, 590 1085, 540 1040 Z" fill="#8F9D80" opacity="0.8"/>
+  </g>
+</svg>
