@@ -44,7 +44,7 @@ select lives_ok($$update public.business_settings set shop_name = 'florist-edit'
 select tests.logout();
 select isnt((select shop_name from public.business_settings), 'florist-edit', 'florist cannot change business settings');
 select tests.login_as('a0000000-0000-4000-8000-000000000003');
-select is((select count(*) from public.customers), :all_customers::bigint, 'florist can read customers (to label orders)');
+select is((select count(*) from public.customers), 0::bigint, 'florist cannot read customer records (Phase 5 policy)');
 select tests.logout();
 
 -- ===================== RIDER =================================================

@@ -17,6 +17,8 @@ export const PERMISSIONS = {
   "catalog.manage": ["owner", "manager"],
   "inventory.read": ["owner", "manager", "florist"],
   "inventory.manage": ["owner", "manager", "florist"],
+  "inventory.adjust": ["owner", "manager"],
+  "preparation.work": ["owner", "manager", "florist"],
   "delivery.manage": ["owner", "manager"],
   "payments.read": ["owner", "manager", "support"],
   "payments.verify": ["owner", "manager"],

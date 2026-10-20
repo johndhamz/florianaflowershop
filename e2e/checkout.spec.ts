@@ -1,4 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+
+import { addToCart, fillCheckout } from "./helpers";
 
 /**
  * Checkout + payments against the mock gateway (PAYMENT_PROVIDER=mock).
@@ -9,48 +11,6 @@ const shotDir = "e2e/screenshots";
 
 // Multi-page flows (cart → form → gateway → tracking → admin) need more than the default 30 s.
 test.describe.configure({ timeout: 120_000 });
-
-function futureWeekday(daysAhead: number) {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() + daysAhead);
-  while ([0, 6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate() + 1);
-  return d.toISOString().slice(0, 10);
-}
-
-async function addToCart(page: Page, slug = "sunday-market-bunch") {
-  await page.goto(`/shop/${slug}`);
-  await page.getByRole("button", { name: /Add to cart/ }).click();
-  await expect(page.getByText("Added to your cart.")).toBeVisible();
-}
-
-async function fillCheckout(
-  page: Page,
-  opts: { method: "paymongo" | "bank_transfer"; promo?: string; barangay?: string },
-) {
-  await page.goto("/checkout");
-  await page.getByLabel("Your name").fill("Maria Santos");
-  await page.getByLabel("Email", { exact: true }).fill(`maria+${Date.now()}@example.com`);
-  await page.getByLabel("Mobile number").fill("0917 123 4567");
-  await page.getByLabel("Recipient's name").fill("Paolo Santos");
-  await page.getByLabel("Recipient's mobile").fill("0918 123 4567");
-  await page.getByLabel("Street address").fill("Unit 12B, Avalon Condominium");
-  await page.getByLabel("Barangay").fill(opts.barangay ?? "Lahug");
-  await page.getByLabel("Delivery date").fill(futureWeekday(5));
-  // The form auto-selects the first slot with remaining capacity for the date.
-  await expect(page.getByLabel("Time slot")).toBeEnabled();
-  await expect(page.getByLabel("Time slot")).not.toHaveValue("");
-  await page.getByLabel("Gift message (optional)").fill("Happy anniversary!");
-  if (opts.promo) {
-    await page.getByLabel("Promo code").fill(opts.promo);
-    await page.getByRole("button", { name: "Apply" }).click();
-  }
-  await page
-    .getByText(
-      opts.method === "paymongo" ? "Pay online" : "Bank transfer / GCash transfer",
-    )
-    .click();
-  await page.getByLabel(/I agree to the/).check();
-}
 
 test.describe("checkout", () => {
   test("successful online payment confirms the order (webhook + redirect)", async ({

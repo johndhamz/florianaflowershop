@@ -977,9 +977,92 @@ export type Database = {
           },
         ];
       };
+      order_substitutions: {
+        Row: {
+          created_at: string;
+          from_material_id: string;
+          id: string;
+          order_id: string;
+          quantity: number;
+          reason: string;
+          requested_by: string | null;
+          review_note: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          status: Database["public"]["Enums"]["substitution_status"];
+          to_material_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          from_material_id: string;
+          id?: string;
+          order_id: string;
+          quantity: number;
+          reason: string;
+          requested_by?: string | null;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: Database["public"]["Enums"]["substitution_status"];
+          to_material_id: string;
+        };
+        Update: {
+          created_at?: string;
+          from_material_id?: string;
+          id?: string;
+          order_id?: string;
+          quantity?: number;
+          reason?: string;
+          requested_by?: string | null;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: Database["public"]["Enums"]["substitution_status"];
+          to_material_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_substitutions_from_material_id_fkey";
+            columns: ["from_material_id"];
+            isOneToOne: false;
+            referencedRelation: "material_stock_levels";
+            referencedColumns: ["material_id"];
+          },
+          {
+            foreignKeyName: "order_substitutions_from_material_id_fkey";
+            columns: ["from_material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_substitutions_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_substitutions_to_material_id_fkey";
+            columns: ["to_material_id"];
+            isOneToOne: false;
+            referencedRelation: "material_stock_levels";
+            referencedColumns: ["material_id"];
+          },
+          {
+            foreignKeyName: "order_substitutions_to_material_id_fkey";
+            columns: ["to_material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       orders: {
         Row: {
           add_ons_centavos: number;
+          arrangement_photo_path: string | null;
           assigned_rider_id: string | null;
           cancellation_reason: string | null;
           cancelled_at: string | null;
@@ -1010,8 +1093,11 @@ export type Database = {
           order_number: string;
           payment_status: Database["public"]["Enums"]["payment_status"];
           placed_at: string;
+          preparation_started_at: string | null;
+          prepared_by: string | null;
           promo_code_id: string | null;
           promo_code_snapshot: string | null;
+          ready_at: string | null;
           reservation_expires_at: string | null;
           source: string;
           status: Database["public"]["Enums"]["order_status"];
@@ -1023,6 +1109,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           add_ons_centavos?: number;
+          arrangement_photo_path?: string | null;
           assigned_rider_id?: string | null;
           cancellation_reason?: string | null;
           cancelled_at?: string | null;
@@ -1053,8 +1140,11 @@ export type Database = {
           order_number?: string;
           payment_status?: Database["public"]["Enums"]["payment_status"];
           placed_at?: string;
+          preparation_started_at?: string | null;
+          prepared_by?: string | null;
           promo_code_id?: string | null;
           promo_code_snapshot?: string | null;
+          ready_at?: string | null;
           reservation_expires_at?: string | null;
           source?: string;
           status?: Database["public"]["Enums"]["order_status"];
@@ -1065,6 +1155,7 @@ export type Database = {
         };
         Update: {
           add_ons_centavos?: number;
+          arrangement_photo_path?: string | null;
           assigned_rider_id?: string | null;
           cancellation_reason?: string | null;
           cancelled_at?: string | null;
@@ -1095,8 +1186,11 @@ export type Database = {
           order_number?: string;
           payment_status?: Database["public"]["Enums"]["payment_status"];
           placed_at?: string;
+          preparation_started_at?: string | null;
+          prepared_by?: string | null;
           promo_code_id?: string | null;
           promo_code_snapshot?: string | null;
+          ready_at?: string | null;
           reservation_expires_at?: string | null;
           source?: string;
           status?: Database["public"]["Enums"]["order_status"];
@@ -1140,6 +1234,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "delivery_zones";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_prepared_by_fkey";
+            columns: ["prepared_by"];
+            isOneToOne: false;
+            referencedRelation: "staff_profiles";
+            referencedColumns: ["user_id"];
           },
           {
             foreignKeyName: "orders_promo_code_id_fkey";
@@ -1762,6 +1863,13 @@ export type Database = {
             foreignKeyName: "recipe_items_material_id_fkey";
             columns: ["material_id"];
             isOneToOne: false;
+            referencedRelation: "material_stock_levels";
+            referencedColumns: ["material_id"];
+          },
+          {
+            foreignKeyName: "recipe_items_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
             referencedRelation: "materials";
             referencedColumns: ["id"];
           },
@@ -1945,6 +2053,13 @@ export type Database = {
             foreignKeyName: "stock_batches_material_id_fkey";
             columns: ["material_id"];
             isOneToOne: false;
+            referencedRelation: "material_stock_levels";
+            referencedColumns: ["material_id"];
+          },
+          {
+            foreignKeyName: "stock_batches_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
             referencedRelation: "materials";
             referencedColumns: ["id"];
           },
@@ -1969,6 +2084,7 @@ export type Database = {
           reason: string | null;
           reference_id: string | null;
           reference_type: string | null;
+          wastage_reason: string | null;
         };
         ComputedFields: never;
         Insert: {
@@ -1982,6 +2098,7 @@ export type Database = {
           reason?: string | null;
           reference_id?: string | null;
           reference_type?: string | null;
+          wastage_reason?: string | null;
         };
         Update: {
           batch_id?: string;
@@ -1994,14 +2111,29 @@ export type Database = {
           reason?: string | null;
           reference_id?: string | null;
           reference_type?: string | null;
+          wastage_reason?: string | null;
         };
         Relationships: [
           {
             foreignKeyName: "stock_movements_batch_id_fkey";
             columns: ["batch_id"];
             isOneToOne: false;
+            referencedRelation: "inventory_reconciliation";
+            referencedColumns: ["batch_id"];
+          },
+          {
+            foreignKeyName: "stock_movements_batch_id_fkey";
+            columns: ["batch_id"];
+            isOneToOne: false;
             referencedRelation: "stock_batches";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stock_movements_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "material_stock_levels";
+            referencedColumns: ["material_id"];
           },
           {
             foreignKeyName: "stock_movements_material_id_fkey";
@@ -2058,8 +2190,22 @@ export type Database = {
             foreignKeyName: "stock_reservations_batch_id_fkey";
             columns: ["batch_id"];
             isOneToOne: false;
+            referencedRelation: "inventory_reconciliation";
+            referencedColumns: ["batch_id"];
+          },
+          {
+            foreignKeyName: "stock_reservations_batch_id_fkey";
+            columns: ["batch_id"];
+            isOneToOne: false;
             referencedRelation: "stock_batches";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stock_reservations_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "material_stock_levels";
+            referencedColumns: ["material_id"];
           },
           {
             foreignKeyName: "stock_reservations_material_id_fkey";
@@ -2172,8 +2318,61 @@ export type Database = {
           },
         ];
       };
+      inventory_reconciliation: {
+        Row: {
+          active_reservations: number | null;
+          balanced: boolean | null;
+          batch_code: string | null;
+          batch_id: string | null;
+          expected_remaining: number | null;
+          journal_out_and_adjust: number | null;
+          journal_received: number | null;
+          material: string | null;
+          quantity_received: number | null;
+          quantity_remaining: number | null;
+          quantity_reserved: number | null;
+          sku: string | null;
+          status: Database["public"]["Enums"]["stock_batch_status"] | null;
+        };
+        ComputedFields: never;
+        Relationships: [];
+      };
+      material_stock_levels: {
+        Row: {
+          available: number | null;
+          category: string | null;
+          expiring_soon: number | null;
+          is_active: boolean | null;
+          is_low: boolean | null;
+          is_perishable: boolean | null;
+          low_stock_threshold: number | null;
+          material_id: string | null;
+          name: string | null;
+          next_expiry: string | null;
+          on_hand: number | null;
+          reserved: number | null;
+          sku: string | null;
+          unit: Database["public"]["Enums"]["material_unit"] | null;
+        };
+        ComputedFields: never;
+        Relationships: [];
+      };
     };
     Functions: {
+      adjust_stock: {
+        Args: { p_batch_id: string; p_delta: number; p_reason: string };
+        Returns: Json;
+      };
+      apply_substitution: {
+        Args: {
+          p_from_material_id: string;
+          p_order_id: string;
+          p_quantity: number;
+          p_reason: string;
+          p_to_material_id: string;
+        };
+        Returns: Json;
+      };
       attach_payment_proof: {
         Args: {
           p_order_number: string;
@@ -2183,6 +2382,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      cancel_order: { Args: { p_order_id: string; p_reason: string }; Returns: Json };
       cart_add_item: {
         Args: {
           p_add_ons?: Json;
@@ -2197,6 +2397,15 @@ export type Database = {
       cart_remove_unavailable: { Args: { p_token: string }; Returns: Json };
       cart_update_item: {
         Args: { p_item_id: string; p_quantity: number; p_token: string };
+        Returns: Json;
+      };
+      complete_preparation: {
+        Args: {
+          p_actual: Json;
+          p_notes?: string;
+          p_order_id: string;
+          p_photo_path?: string;
+        };
         Returns: Json;
       };
       consume_stock_reservations: {
@@ -2272,6 +2481,21 @@ export type Database = {
         Args: { p_cart_token: string; p_idempotency_key: string; p_input: Json };
         Returns: Json;
       };
+      preparation_details: { Args: { p_order_id: string }; Returns: Json };
+      preparation_queue: { Args: { p_include_ready?: boolean }; Returns: Json };
+      receive_stock: {
+        Args: {
+          p_batch_code?: string;
+          p_expires_at?: string;
+          p_material_id: string;
+          p_notes?: string;
+          p_quantity: number;
+          p_received_at?: string;
+          p_supplier_id?: string;
+          p_unit_cost_centavos: number;
+        };
+        Returns: Json;
+      };
       record_payment_event: {
         Args: {
           p_event_id: string;
@@ -2291,6 +2515,15 @@ export type Database = {
           p_provider_refund_id?: string;
           p_reason: string;
           p_status: Database["public"]["Enums"]["refund_status"];
+        };
+        Returns: Json;
+      };
+      record_wastage: {
+        Args: {
+          p_batch_id: string;
+          p_note?: string;
+          p_quantity: number;
+          p_reason: string;
         };
         Returns: Json;
       };
@@ -2330,6 +2563,25 @@ export type Database = {
           isOneToOne: false;
           isSetofReturn: true;
         };
+      };
+      review_substitution: {
+        Args: { p_approve: boolean; p_note?: string; p_substitution_id: string };
+        Returns: Json;
+      };
+      start_preparation: { Args: { p_order_id: string }; Returns: Json };
+      upcoming_material_requirements: {
+        Args: { p_days?: number };
+        Returns: {
+          available: number;
+          material_id: string;
+          name: string;
+          orders: number;
+          required: number;
+          reserved: number;
+          shortfall: number;
+          sku: string;
+          unit: Database["public"]["Enums"]["material_unit"];
+        }[];
       };
       update_payment_provider_ref: {
         Args: {
@@ -2390,6 +2642,7 @@ export type Database = {
       stock_movement_type:
         "receive" | "reserve" | "release" | "consume" | "adjust" | "discard" | "expire";
       stock_reservation_status: "active" | "consumed" | "released" | "expired";
+      substitution_status: "applied" | "approved" | "rejected";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -2562,6 +2815,7 @@ export const Constants = {
         "expire",
       ],
       stock_reservation_status: ["active", "consumed", "released", "expired"],
+      substitution_status: ["applied", "approved", "rejected"],
     },
   },
 } as const;
