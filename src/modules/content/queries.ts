@@ -74,6 +74,8 @@ export type BusinessSettings = {
   address: string | null;
   same_day_cutoff: string;
   social: Record<string, string>;
+  online_payments_enabled: boolean;
+  bank_transfer_enabled: boolean;
 };
 
 export async function getBusinessSettings(): Promise<BusinessSettings> {
@@ -83,7 +85,7 @@ export async function getBusinessSettings(): Promise<BusinessSettings> {
   const { data, error } = await createPublicClient()
     .from("business_settings")
     .select(
-      "shop_name, tagline, contact_email, contact_phone, address, same_day_cutoff, social",
+      "shop_name, tagline, contact_email, contact_phone, address, same_day_cutoff, social, online_payments_enabled, bank_transfer_enabled",
     )
     .eq("id", 1)
     .maybeSingle();
@@ -96,5 +98,7 @@ export async function getBusinessSettings(): Promise<BusinessSettings> {
     address: data?.address ?? null,
     same_day_cutoff: data?.same_day_cutoff ?? "14:00",
     social: (data?.social as Record<string, string> | null) ?? {},
+    online_payments_enabled: data?.online_payments_enabled ?? false,
+    bank_transfer_enabled: data?.bank_transfer_enabled ?? true,
   };
 }

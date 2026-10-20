@@ -131,6 +131,7 @@ export type Database = {
         Row: {
           address: string | null;
           bank_transfer_enabled: boolean;
+          bank_transfer_hold_hours: number;
           bank_transfer_instructions: string | null;
           contact_email: string;
           contact_phone: string;
@@ -152,6 +153,7 @@ export type Database = {
         Insert: {
           address?: string | null;
           bank_transfer_enabled?: boolean;
+          bank_transfer_hold_hours?: number;
           bank_transfer_instructions?: string | null;
           contact_email: string;
           contact_phone: string;
@@ -172,6 +174,7 @@ export type Database = {
         Update: {
           address?: string | null;
           bank_transfer_enabled?: boolean;
+          bank_transfer_hold_hours?: number;
           bank_transfer_instructions?: string | null;
           contact_email?: string;
           contact_phone?: string;
@@ -714,6 +717,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      order_access_tokens: {
+        Row: {
+          created_at: string;
+          order_id: string;
+          token: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          order_id: string;
+          token: string;
+        };
+        Update: {
+          created_at?: string;
+          order_id?: string;
+          token?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_access_tokens_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: true;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       order_item_add_ons: {
         Row: {
           add_on_id: string | null;
@@ -1172,6 +1202,7 @@ export type Database = {
         Row: {
           amount_centavos: number;
           attempt: number;
+          checkout_url: string | null;
           created_at: string;
           currency: string;
           expires_at: string | null;
@@ -1183,6 +1214,7 @@ export type Database = {
           order_id: string;
           paid_at: string | null;
           proof_storage_path: string | null;
+          proof_uploaded_at: string | null;
           provider: Database["public"]["Enums"]["payment_provider"];
           provider_data: NonNullable<Json>;
           provider_payment_id: string | null;
@@ -1196,6 +1228,7 @@ export type Database = {
         Insert: {
           amount_centavos: number;
           attempt?: number;
+          checkout_url?: string | null;
           created_at?: string;
           currency?: string;
           expires_at?: string | null;
@@ -1207,6 +1240,7 @@ export type Database = {
           order_id: string;
           paid_at?: string | null;
           proof_storage_path?: string | null;
+          proof_uploaded_at?: string | null;
           provider: Database["public"]["Enums"]["payment_provider"];
           provider_data?: NonNullable<Json>;
           provider_payment_id?: string | null;
@@ -1219,6 +1253,7 @@ export type Database = {
         Update: {
           amount_centavos?: number;
           attempt?: number;
+          checkout_url?: string | null;
           created_at?: string;
           currency?: string;
           expires_at?: string | null;
@@ -1230,6 +1265,7 @@ export type Database = {
           order_id?: string;
           paid_at?: string | null;
           proof_storage_path?: string | null;
+          proof_uploaded_at?: string | null;
           provider?: Database["public"]["Enums"]["payment_provider"];
           provider_data?: NonNullable<Json>;
           provider_payment_id?: string | null;
@@ -2138,6 +2174,15 @@ export type Database = {
       };
     };
     Functions: {
+      attach_payment_proof: {
+        Args: {
+          p_order_number: string;
+          p_reference?: string;
+          p_storage_path: string;
+          p_token: string;
+        };
+        Returns: Json;
+      };
       cart_add_item: {
         Args: {
           p_add_ons?: Json;
@@ -2158,8 +2203,18 @@ export type Database = {
         Args: { p_reference_id: string; p_reference_type: string };
         Returns: number;
       };
+      create_payment_attempt: {
+        Args: {
+          p_expires_at?: string;
+          p_idempotency_key: string;
+          p_order_id: string;
+          p_provider: Database["public"]["Enums"]["payment_provider"];
+        };
+        Returns: Json;
+      };
       expire_stock_batches: { Args: Record<PropertyKey, never>; Returns: number };
       expire_stock_reservations: { Args: Record<PropertyKey, never>; Returns: number };
+      expire_unpaid_orders: { Args: Record<PropertyKey, never>; Returns: number };
       find_delivery_zone: {
         Args: { p_query: string };
         Returns: {
@@ -2173,11 +2228,72 @@ export type Database = {
           zone_name: string;
         }[];
       };
+      find_payment_by_provider_ref: {
+        Args: {
+          p_provider: Database["public"]["Enums"]["payment_provider"];
+          p_provider_payment_id: string;
+        };
+        Returns: Json;
+      };
       get_order_for_tracking: {
         Args: { p_order_number: string; p_token: string };
         Returns: Json;
       };
+      list_delivery_options: {
+        Args: { p_delivery_date: string; p_zone_id: string };
+        Returns: Json;
+      };
+      mark_order_paid: {
+        Args: {
+          p_method?: Database["public"]["Enums"]["payment_method"];
+          p_paid_at?: string;
+          p_payment_id: string;
+          p_provider_data?: Json;
+          p_provider_payment_id?: string;
+          p_verified_by?: string;
+        };
+        Returns: Json;
+      };
+      mark_payment_event_processed: {
+        Args: { p_error?: string; p_event_id: string; p_payment_id?: string };
+        Returns: undefined;
+      };
+      mark_payment_failed: {
+        Args: {
+          p_failure_code?: string;
+          p_failure_message?: string;
+          p_payment_id: string;
+          p_provider_data?: Json;
+        };
+        Returns: Json;
+      };
       material_available_quantity: { Args: { p_material_id: string }; Returns: number };
+      place_order: {
+        Args: { p_cart_token: string; p_idempotency_key: string; p_input: Json };
+        Returns: Json;
+      };
+      record_payment_event: {
+        Args: {
+          p_event_id: string;
+          p_event_type: string;
+          p_payload: Json;
+          p_payment_id?: string;
+          p_provider: Database["public"]["Enums"]["payment_provider"];
+          p_signature_verified: boolean;
+        };
+        Returns: Json;
+      };
+      record_refund: {
+        Args: {
+          p_amount_centavos: number;
+          p_idempotency_key: string;
+          p_payment_id: string;
+          p_provider_refund_id?: string;
+          p_reason: string;
+          p_status: Database["public"]["Enums"]["refund_status"];
+        };
+        Returns: Json;
+      };
       release_delivery_slot: { Args: { p_allocation_id: string }; Returns: undefined };
       release_stock_reservations: {
         Args: { p_reason?: string; p_reference_id: string; p_reference_type: string };
@@ -2215,8 +2331,25 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      update_payment_provider_ref: {
+        Args: {
+          p_checkout_url: string;
+          p_payment_id: string;
+          p_provider_data?: Json;
+          p_provider_payment_id: string;
+        };
+        Returns: undefined;
+      };
+      validate_promo_code: {
+        Args: { p_code: string; p_goods_centavos: number };
+        Returns: Json;
+      };
       variant_availability: { Args: { p_variant_id: string }; Returns: string };
       variant_available_quantity: { Args: { p_variant_id: string }; Returns: number };
+      verify_bank_transfer: {
+        Args: { p_approve: boolean; p_note?: string; p_payment_id: string };
+        Returns: Json;
+      };
     };
     Enums: {
       cart_status: "active" | "converted" | "abandoned" | "merged";

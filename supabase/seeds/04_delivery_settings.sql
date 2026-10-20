@@ -33,8 +33,8 @@ insert into public.promo_codes (id, code, description, promo_type, value, min_su
   ('90000000-0000-4000-8000-000000000002', 'FIRSTBLOOM','₱150 off first orders over ₱1,000','fixed',   15000, 100000, null, now() - interval '1 day', null, null),
   ('90000000-0000-4000-8000-000000000003', 'EXPIRED5',  'Expired test code',                'percent', 5,   0,      null, now() - interval '30 days', now() - interval '1 day', null);
 
-insert into public.business_settings (id, contact_email, contact_phone, address, bank_transfer_instructions, social) values
-  (1, 'hello@florianaflowers.ph', '+639170000000', 'Lahug, Cebu City, Cebu 6000',
+insert into public.business_settings (id, contact_email, contact_phone, address, online_payments_enabled, bank_transfer_instructions, social) values
+  (1, 'hello@florianaflowers.ph', '+639170000000', 'Lahug, Cebu City, Cebu 6000', true,
    'Transfer the exact total to BPI 1234-5678-90 (Floriana Flowers) or GCash 0917 000 0000, then upload a screenshot of the receipt. We confirm within 2 hours during shop hours (8 AM – 6 PM).',
    '{"instagram":"https://instagram.com/florianaflowers","facebook":"https://facebook.com/florianaflowers"}'::jsonb);
 

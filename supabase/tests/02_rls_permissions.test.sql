@@ -29,9 +29,12 @@ select is(public.get_order_for_tracking('FL-10001', 'track-fl-10002-dev'), null,
 select tests.logout();
 
 -- ===================== FLORIST ===============================================
+-- Totals as seen without RLS, so the suite is robust to orders created by other test runs.
+select count(*) as all_orders from public.orders \gset
+select count(*) as all_customers from public.customers \gset
 select tests.login_as('a0000000-0000-4000-8000-000000000003');
 select is(app.current_staff_role()::text, 'florist', 'florist role resolves from JWT');
-select is((select count(*) from public.orders), 4::bigint, 'florist can read all orders');
+select is((select count(*) from public.orders), :all_orders::bigint, 'florist can read all orders');
 select is((select count(*) from public.stock_batches), 32::bigint, 'florist can read stock batches');
 select is((select count(*) from public.payments), 0::bigint, 'florist cannot see payments');
 select lives_ok($$update public.orders set fulfillment_status = 'ready' where order_number = 'FL-10002'$$, 'florist can update fulfillment status');
@@ -41,7 +44,7 @@ select lives_ok($$update public.business_settings set shop_name = 'florist-edit'
 select tests.logout();
 select isnt((select shop_name from public.business_settings), 'florist-edit', 'florist cannot change business settings');
 select tests.login_as('a0000000-0000-4000-8000-000000000003');
-select is((select count(*) from public.customers), 4::bigint, 'florist can read customers (to label orders)');
+select is((select count(*) from public.customers), :all_customers::bigint, 'florist can read customers (to label orders)');
 select tests.logout();
 
 -- ===================== RIDER =================================================

@@ -1,32 +1,57 @@
 import type { Metadata } from "next";
-import { LockIcon } from "lucide-react";
-import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
+import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { Container } from "@/components/shared/container";
-import { EmptyState } from "@/components/shared/empty-state";
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/shared/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getCart } from "@/modules/cart/queries";
+import { getBusinessSettings } from "@/modules/content/queries";
+import { listDeliveryZones } from "@/modules/delivery/queries";
 
 export const metadata: Metadata = { title: "Checkout", robots: { index: false } };
 
-/** Placeholder until the checkout phase ships. Keeps the cart CTA from dead-ending. */
+async function CheckoutContents() {
+  const [cart, zones, settings] = await Promise.all([
+    getCart(),
+    listDeliveryZones(),
+    getBusinessSettings(),
+  ]);
+  if (cart.items.length === 0) redirect("/cart");
+  if (cart.has_issues) redirect("/cart");
+  return (
+    <CheckoutForm
+      cart={cart}
+      zones={zones.map((z) => ({
+        id: z.id,
+        name: z.name,
+        city: z.city,
+        barangays: z.barangays,
+        feeCentavos: z.feeCentavos,
+        freeDeliveryThresholdCentavos: z.freeDeliveryThresholdCentavos,
+        minOrderCentavos: z.minOrderCentavos,
+        sameDayCutoff: z.sameDayCutoff,
+      }))}
+      paymentMethods={{
+        paymongo: settings.online_payments_enabled,
+        bank_transfer: settings.bank_transfer_enabled,
+      }}
+    />
+  );
+}
+
 export default function CheckoutPage() {
   return (
-    <Container className="py-16">
-      <EmptyState
-        icon={LockIcon}
-        title="Checkout is almost ready"
-        description="Online checkout and payments are being finished. Your cart is saved on this device for 30 days."
-        action={
-          <>
-            <Button asChild>
-              <Link href="/cart">Back to cart</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/contact">Order by message</Link>
-            </Button>
-          </>
-        }
+    <Container className="flex flex-col gap-8 py-10 sm:py-14">
+      <PageHeader
+        eyebrow="Checkout"
+        title="Almost there"
+        description="Guest checkout. We only ask for what we need to deliver."
       />
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-2xl" />}>
+        <CheckoutContents />
+      </Suspense>
     </Container>
   );
 }

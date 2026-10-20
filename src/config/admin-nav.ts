@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BoxesIcon,
+  CreditCardIcon,
   FlowerIcon,
   LayoutDashboardIcon,
   SettingsIcon,
@@ -20,6 +21,7 @@ export type AdminNavItem = {
 export const adminNav: readonly AdminNavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboardIcon },
   { label: "Orders", href: "/admin/orders", icon: ShoppingBagIcon, matchNested: true },
+  { label: "Payments", href: "/admin/payments", icon: CreditCardIcon, matchNested: true },
   { label: "Products", href: "/admin/products", icon: FlowerIcon, matchNested: true },
   { label: "Inventory", href: "/admin/inventory", icon: BoxesIcon, matchNested: true },
   { label: "Deliveries", href: "/admin/deliveries", icon: TruckIcon, matchNested: true },

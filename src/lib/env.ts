@@ -23,8 +23,19 @@ const publicSchema = z.object({
 
 const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  // Optional in Phase 1; required by trusted server jobs in later phases.
+  // Server-only. Used by trusted paths: checkout, webhooks, jobs, media seeding.
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  // Payments. "mock" is for local dev/E2E only and refuses to run in production.
+  PAYMENT_PROVIDER: z.enum(["paymongo", "mock"]).default("mock"),
+  PAYMONGO_SECRET_KEY: z.string().startsWith("sk_").optional(),
+  PAYMONGO_PUBLIC_KEY: z.string().startsWith("pk_").optional(),
+  PAYMONGO_WEBHOOK_SECRET: z.string().min(8).optional(),
+  ALLOW_MOCK_PAYMENTS: z
+    .string()
+    .optional()
+    .transform((v) => v === "true"),
+  // Shared secret for scheduled job endpoints (/api/jobs/*).
+  CRON_SECRET: z.string().min(16).optional(),
 });
 
 export type PublicEnv = z.infer<typeof publicSchema>;

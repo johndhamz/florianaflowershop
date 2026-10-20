@@ -73,6 +73,9 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:55621" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(npx supabase status -o env | grep ANON_KEY | cut -d= -f2 | tr -d '\"')" >> "$GITHUB_ENV"
           echo "SUPABASE_SERVICE_ROLE_KEY=$(npx supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2 | tr -d '\"')" >> "$GITHUB_ENV"
+          echo "PAYMENT_PROVIDER=mock" >> "$GITHUB_ENV"
+          echo "ALLOW_MOCK_PAYMENTS=true" >> "$GITHUB_ENV"
+          echo "CRON_SECRET=ci-cron-secret-0123456789" >> "$GITHUB_ENV"
       - run: npm run db:seed-media
       - run: npx playwright install --with-deps chromium
       - run: npm run build

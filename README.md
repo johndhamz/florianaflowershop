@@ -39,8 +39,14 @@ Storefront routes:
 - `/collections/[slug]`, `/occasions/[slug]`, `/occasions` – scoped catalog pages
 - `/shop/[slug]` – product detail (gallery, variants, add-ons, care, reviews, JSON-LD)
 - `/cart` – persistent anonymous cart with server-side price revalidation
+- `/checkout` – guest checkout (sender, recipient, zone/barangay, date + slot, gift message, promo, payment method)
+- `/checkout/confirmation` – post-payment landing that reconciles with the gateway, then `/orders/[number]?t=…`
+- `/orders/[number]?t=<token>` – secure order tracking, bank-transfer proof upload, payment retry
+- `/mock-pay/[id]` – local fake gateway page (only when `PAYMENT_PROVIDER=mock`)
+- `/api/webhooks/paymongo` – signed webhook receiver · `/api/jobs/expire-reservations` – cron (Bearer `CRON_SECRET`)
 - `/our-story`, `/delivery`, `/faqs`, `/contact`, `/privacy`
 - `/admin` – staff back office (sign-in required; see docs/database.md for seed accounts)
+- `/admin/payments` – verify bank transfers, review online payments, record refunds
 - `/sitemap.xml`, `/robots.txt`
 
 ## Scripts
@@ -133,3 +139,9 @@ Playwright E2E against the production build.
 ## Database
 
 See [docs/database.md](docs/database.md) for the schema, RLS matrix, transactional functions, seed accounts and how to run the database test suites.
+
+## Payments
+
+See [docs/payments.md](docs/payments.md) for the flow, transaction-safety guarantees, the
+PayMongo adapter (every field cited to the official docs), the mock gateway used by the E2E
+suite, and the sandbox checklist to run before going live.

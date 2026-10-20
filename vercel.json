@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/jobs/expire-reservations", "schedule": "*/5 * * * *" }]
+}
