@@ -69,6 +69,7 @@ test.describe("catalog", () => {
 
     await noHorizontalOverflow(page);
     await page.goto("/shop");
+    await expect(grid.getByRole("article")).toHaveCount(12);
     await page.screenshot({
       path: `${shotDir}/shop-${testInfo.project.name}.png`,
       fullPage: true,
