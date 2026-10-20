@@ -38,6 +38,24 @@ jobs:
           retention-days: 1
           include-hidden-files: true
 
+  database:
+    name: Migrations · pgTAP · Concurrency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx supabase start
+      - run: npx supabase db lint --level warning
+      - run: npx supabase test db
+      - run: npx vitest run --config vitest.db.config.mts
+      - run: npx supabase db reset # second full reset proves reproducibility
+      - run: npx supabase db diff # must print "No schema changes found"
+      - run: npm run db:types && git diff --exit-code src/lib/supabase/database.types.ts
+
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest
@@ -49,6 +67,12 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npx supabase start
+      - name: Point the app at the local stack
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:55621" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(npx supabase status -o env | grep ANON_KEY | cut -d= -f2 | tr -d '\"')" >> "$GITHUB_ENV"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$(npx supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2 | tr -d '\"')" >> "$GITHUB_ENV"
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e

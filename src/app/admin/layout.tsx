@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { AdminTopbar } from "@/components/layout/admin-topbar";
+import {
+  AdminUserMenu,
+  AdminUserMenuSkeleton,
+} from "@/components/layout/admin-user-menu";
 import { SkipLink } from "@/components/layout/skip-link";
 
 export const metadata: Metadata = {
@@ -10,13 +14,24 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * Admin shell. The session read lives inside <Suspense> (AdminUserMenu) so the
+ * layout itself stays static. Authorization for data happens in each page's
+ * data access (requireStaff) and in the database (RLS).
+ */
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh bg-ivory-100">
       <SkipLink />
       <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <AdminTopbar />
+        <AdminTopbar
+          userMenu={
+            <Suspense fallback={<AdminUserMenuSkeleton />}>
+              <AdminUserMenu />
+            </Suspense>
+          }
+        />
         <main
           id="main-content"
           tabIndex={-1}

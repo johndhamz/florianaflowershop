@@ -28,7 +28,7 @@ npm run dev                  # http://localhost:3000
 Routes available after Phase 1:
 
 - `/` – storefront homepage shell
-- `/admin` – admin dashboard shell
+- `/admin` – admin dashboard shell (staff sign-in required; see docs/database.md for seed accounts)
 - any unknown URL – branded 404
 
 ## Scripts
@@ -114,3 +114,7 @@ is created; the storefront homepage needs none of them.
 
 `.github/workflows/ci.yml` runs format check, lint, typecheck, unit tests and build, then
 Playwright E2E against the production build.
+
+## Database
+
+See [docs/database.md](docs/database.md) for the schema, RLS matrix, transactional functions, seed accounts and how to run the database test suites.

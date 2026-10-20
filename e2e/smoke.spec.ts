@@ -50,10 +50,32 @@ test.describe("storefront", () => {
 });
 
 test.describe("admin", () => {
+  test("anonymous visitors are sent to the staff login", async ({ page }) => {
+    await page.goto("/admin");
+    await expect(page).toHaveURL(/\/admin\/login\?next=%2Fadmin$/);
+    await expect(page.getByLabel("Email")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Dashboard" })).toHaveCount(
+      0,
+    );
+  });
+
+  test("wrong credentials show a generic error", async ({ page }) => {
+    await page.goto("/admin/login");
+    await page.getByLabel("Email").fill("florist@floriana.local");
+    await page.getByLabel("Password").fill("not-the-password");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Incorrect email or password.")).toBeVisible();
+    await expect(page).toHaveURL(/\/admin\/login$/);
+  });
+
   test("dashboard shell renders with sidebar or drawer navigation", async ({
     page,
   }, testInfo) => {
-    await page.goto("/admin");
+    await page.goto("/admin/login");
+    await page.getByLabel("Email").fill("manager@floriana.local");
+    await page.getByLabel("Password").fill("Floriana!2026");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page).toHaveURL(/\/admin$/);
     await expect(
       page.getByRole("heading", { level: 1, name: "Dashboard" }),
     ).toBeVisible();
@@ -74,8 +96,11 @@ test.describe("admin", () => {
       );
     }
 
+    // Signed-in staff identity is shown in the account menu.
     await page.getByRole("button", { name: "Account menu" }).click();
     await expect(page.getByRole("menuitem", { name: "Settings" })).toBeVisible();
+    await expect(page.getByRole("menu").getByText("Bea Villanueva")).toBeVisible();
+    await expect(page.getByRole("menu").getByText(/Manager/)).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("menuitem", { name: "Settings" })).toBeHidden();
 
@@ -88,5 +113,12 @@ test.describe("admin", () => {
       path: `${shotDir}/admin-${testInfo.project.name}.png`,
       fullPage: true,
     });
+
+    // Sign out returns to the login page and the admin is gated again.
+    await page.getByRole("button", { name: "Account menu" }).click();
+    await page.getByRole("menuitem", { name: "Sign out" }).click();
+    await expect(page).toHaveURL(/\/admin\/login$/);
+    await page.goto("/admin");
+    await expect(page).toHaveURL(/\/admin\/login/);
   });
 });
