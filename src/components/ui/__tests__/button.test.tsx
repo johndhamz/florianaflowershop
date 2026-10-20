@@ -17,11 +17,11 @@ describe("Button", () => {
   it("renders as a child element with asChild", () => {
     render(
       <Button asChild variant="outline">
-        <a href="/shop">Shop</a>
+        <a href="https://example.com/shop">Shop</a>
       </Button>,
     );
     const link = screen.getByRole("link", { name: "Shop" });
-    expect(link).toHaveAttribute("href", "/shop");
+    expect(link).toHaveAttribute("href", "https://example.com/shop");
     expect(link).toHaveAttribute("data-variant", "outline");
   });
 

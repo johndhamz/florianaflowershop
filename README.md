@@ -25,11 +25,23 @@ cp .env.example .env.local   # fill in Supabase values (placeholders work for Ph
 npm run dev                  # http://localhost:3000
 ```
 
-Routes available after Phase 1:
+Local database (required for the storefront and admin):
 
-- `/` – storefront homepage shell
-- `/admin` – admin dashboard shell (staff sign-in required; see docs/database.md for seed accounts)
-- any unknown URL – branded 404
+```bash
+npx supabase start        # local Postgres/Auth/Storage on ports 556xx
+npm run db:seed-media     # upload placeholder product imagery to the local bucket
+```
+
+Storefront routes:
+
+- `/` – homepage (hero, coverage checker, collections, best sellers, story, orchid spotlight, reviews)
+- `/shop` – all flowers with search, collection/occasion/price filters, sorting and pagination
+- `/collections/[slug]`, `/occasions/[slug]`, `/occasions` – scoped catalog pages
+- `/shop/[slug]` – product detail (gallery, variants, add-ons, care, reviews, JSON-LD)
+- `/cart` – persistent anonymous cart with server-side price revalidation
+- `/our-story`, `/delivery`, `/faqs`, `/contact`, `/privacy`
+- `/admin` – staff back office (sign-in required; see docs/database.md for seed accounts)
+- `/sitemap.xml`, `/robots.txt`
 
 ## Scripts
 
@@ -66,7 +78,8 @@ src/
 │  └─ providers/           # Tooltip + toast providers
 ├─ config/                 # Static site + navigation config (no secrets)
 ├─ lib/                    # Cross-cutting utilities: env, money, datetime, supabase
-├─ modules/                # Bounded domains (catalog, orders, inventory, delivery, …)
+├─ modules/                # Bounded domains: catalog, cart, content, reviews, delivery, auth, orders, …
+│                          #   each owns types, queries ("use cache" + tags) and server actions
 ├─ proxy.ts                # Supabase session refresh for /admin/*
 └─ test/                   # Vitest setup
 ```
@@ -107,8 +120,10 @@ is created; the storefront homepage needs none of them.
 - Any component reading `cookies()`/`headers()` must sit behind `<Suspense>` (Cache
   Components). Never read the session at a layout's top level.
 - Error boundaries receive `{ error: unknown, retry }` (Next 16), not `reset`.
-- Routes under `/shop`, `/delivery`, etc. are linked from navigation but ship in later
-  phases.
+- Dynamic catalog routes stream. An unknown slug renders the branded not-found page with
+  a `noindex` meta tag but a 200 status (documented Next.js streaming behaviour). A hard
+  404 would need a slug lookup in `src/proxy.ts` on every request; we chose not to pay
+  that latency.
 
 ## CI
 

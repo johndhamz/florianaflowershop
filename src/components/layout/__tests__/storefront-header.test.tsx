@@ -6,7 +6,7 @@ import { StorefrontHeader } from "@/components/layout/storefront-header";
 import { storefrontNav } from "@/config/site";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/shop/orchids",
+  usePathname: () => "/collections/lolas-orchid-collection",
 }));
 
 describe("StorefrontHeader", () => {

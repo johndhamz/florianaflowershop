@@ -19,7 +19,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts && prettier --write src/lib/supabase/database.types.ts",
-    "test:db": "supabase test db && vitest run --config vitest.db.config.mts"
+    "test:db": "supabase test db && vitest run --config vitest.db.config.mts",
+    "db:seed-media": "node --env-file=.env.local --experimental-strip-types scripts/seed-media.mts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",

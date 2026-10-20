@@ -29,9 +29,9 @@ export type NavItem = {
 /** Storefront primary navigation. Routes beyond "/" ship in later phases. */
 export const storefrontNav: readonly NavItem[] = [
   { label: "Shop", href: "/shop" },
-  { label: "Bouquets", href: "/shop/bouquets" },
-  { label: "Orchids", href: "/shop/orchids" },
-  { label: "Everyday Blooms", href: "/shop/everyday" },
+  { label: "Bouquets", href: "/collections/premium-bouquets" },
+  { label: "Orchids", href: "/collections/lolas-orchid-collection" },
+  { label: "Everyday Blooms", href: "/collections/everyday-blooms" },
   { label: "Occasions", href: "/occasions" },
   { label: "Delivery", href: "/delivery" },
 ] as const;
@@ -39,20 +39,18 @@ export const storefrontNav: readonly NavItem[] = [
 export const footerNav = {
   shop: [
     { label: "All flowers", href: "/shop" },
-    { label: "Premium bouquets", href: "/shop/bouquets" },
-    { label: "Orchid gifts", href: "/shop/orchids" },
-    { label: "Everyday blooms", href: "/shop/everyday" },
-    { label: "Arrangements", href: "/shop/arrangements" },
+    { label: "Premium bouquets", href: "/collections/premium-bouquets" },
+    { label: "Orchid gifts", href: "/collections/lolas-orchid-collection" },
+    { label: "Everyday blooms", href: "/collections/everyday-blooms" },
+    { label: "Arrangements", href: "/collections/arrangements" },
   ],
   help: [
     { label: "Delivery zones & slots", href: "/delivery" },
-    { label: "Care guide", href: "/care" },
     { label: "FAQs", href: "/faqs" },
     { label: "Contact us", href: "/contact" },
   ],
   company: [
-    { label: "Our story", href: "/about" },
+    { label: "Our story", href: "/our-story" },
     { label: "Privacy notice", href: "/privacy" },
-    { label: "Terms of service", href: "/terms" },
   ],
 } as const satisfies Record<string, readonly NavItem[]>;

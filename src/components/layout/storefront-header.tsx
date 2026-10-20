@@ -1,10 +1,12 @@
-import { SearchIcon, ShoppingBagIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { NavLink } from "@/components/layout/nav-link";
 import { Container } from "@/components/shared/container";
+import { CartBadge, CartLink } from "@/components/storefront/cart-badge";
 import { Button } from "@/components/ui/button";
 import { storefrontNav } from "@/config/site";
 
@@ -42,15 +44,13 @@ export function StorefrontHeader() {
 
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" aria-label="Search flowers" asChild>
-            <Link href="/search">
+            <Link href="/shop">
               <SearchIcon />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Cart, 0 items" asChild>
-            <Link href="/cart">
-              <ShoppingBagIcon />
-            </Link>
-          </Button>
+          <Suspense fallback={<CartLink count={0} />}>
+            <CartBadge />
+          </Suspense>
           <Button className="ml-1 hidden sm:inline-flex" asChild>
             <Link href="/shop">Shop now</Link>
           </Button>

@@ -1,2 +1,3 @@
 export * from "./types";
-export { sampleProducts } from "./sample-data";
+export * from "./search-params";
+export { toProductSummary } from "./mappers";

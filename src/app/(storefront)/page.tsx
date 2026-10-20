@@ -12,29 +12,25 @@ import { Container } from "@/components/shared/container";
 import { ProductCard } from "@/components/shared/product-card";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { CollectionCard } from "@/components/storefront/collection-card";
+import { CoverageChecker } from "@/components/storefront/coverage-checker";
+import { JsonLd } from "@/components/storefront/json-ld";
+import { ReviewsSection } from "@/components/storefront/reviews-section";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { storagePublicUrl } from "@/lib/supabase/storage";
 import {
-  PRODUCT_CATEGORIES,
-  PRODUCT_CATEGORY_LABELS,
-  sampleProducts,
-} from "@/modules/catalog";
-
-const categoryCopy = {
-  everyday: { blurb: "Market-fresh bunches for any day of the week.", from: "from ₱450" },
-  bouquets: {
-    blurb: "Hand-tied, wrapped and finished for the big moments.",
-    from: "from ₱1,890",
-  },
-  orchids: {
-    blurb: "Living gifts that keep blooming, Lola's favourite.",
-    from: "from ₱1,290",
-  },
-  arrangements: {
-    blurb: "Vase and table pieces styled for homes and events.",
-    from: "from ₱2,400",
-  },
-} as const;
+  listBestSellers,
+  listCollectionProducts,
+  listCollections,
+} from "@/modules/catalog/queries";
+import {
+  getBusinessSettings,
+  getContent,
+  heroSchema,
+  storySchema,
+} from "@/modules/content/queries";
+import { listApprovedReviews } from "@/modules/reviews/queries";
 
 const promises = [
   {
@@ -54,48 +50,91 @@ const promises = [
   },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [hero, story, collections, bestSellers, orchids, reviews, settings] =
+    await Promise.all([
+      getContent("home.hero", heroSchema),
+      getContent("home.story", storySchema),
+      listCollections(),
+      listBestSellers(4),
+      listCollectionProducts("lolas-orchid-collection", 3),
+      listApprovedReviews({ limit: 3 }),
+      getBusinessSettings(),
+    ]);
+
+  const heroImage =
+    storagePublicUrl("content-media", hero?.image_path) ??
+    "/images/placeholders/hero.jpg";
+  const storyImage =
+    storagePublicUrl("content-media", story?.image_path) ??
+    "/images/placeholders/orchid.jpg";
+
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Florist",
+          name: settings.shop_name,
+          url: siteConfig.url,
+          telephone: settings.contact_phone,
+          email: settings.contact_email,
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Cebu City",
+            addressRegion: "Cebu",
+            addressCountry: "PH",
+          },
+          priceRange: "₱₱",
+          sameAs: Object.values(settings.social),
+        }}
+      />
+
       {/* Hero */}
       <section className="relative overflow-hidden">
         <Container className="grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
           <div className="max-w-xl animate-fade-up">
             <StatusBadge tone="brand" dot={false} className="mb-5">
               <ClockIcon aria-hidden className="size-3.5" />
-              Same-day delivery before 2 PM
+              {hero?.eyebrow ?? "Same-day delivery before 2 PM"}
             </StatusBadge>
             <h1 className="font-serif text-5xl leading-[1.02] font-semibold text-cocoa sm:text-6xl lg:text-7xl">
-              Love, in every <em className="font-normal text-sage-600 italic">bloom</em>.
+              {hero?.title ?? siteConfig.tagline}
             </h1>
             <p className="mt-6 max-w-md text-base text-muted-foreground sm:text-lg">
-              Everyday flowers, premium bouquets and orchid gifts from a small Cebu studio
-              named after an 86-year-old lola who still tends her orchids each morning.
+              {hero?.body ??
+                "Everyday flowers, premium bouquets and orchid gifts from a small Cebu studio named after an 86-year-old lola who still tends her orchids each morning."}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="h-11 px-6 text-base" asChild>
-                <Link href="/shop">
-                  Shop bouquets
+                <Link href={hero?.cta_primary.href ?? "/shop"}>
+                  {hero?.cta_primary.label ?? "Shop flowers"}
                   <ArrowRightIcon data-icon="inline-end" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-11 px-6 text-base" asChild>
-                <Link href="/shop/orchids">Orchid gifts</Link>
-              </Button>
+              {hero?.cta_secondary ? (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-11 px-6 text-base"
+                  asChild
+                >
+                  <Link href={hero.cta_secondary.href}>{hero.cta_secondary.label}</Link>
+                </Button>
+              ) : null}
             </div>
             <p className="mt-6 text-xs tracking-wide text-muted-foreground uppercase">
               Prices in Philippine Peso · {siteConfig.location}
             </p>
           </div>
-
           <div className="relative mx-auto aspect-[6/7] w-full max-w-md lg:max-w-none">
             <div
               className="absolute -inset-4 -z-10 rounded-[2.5rem] bg-blush-100/70 blur-2xl"
               aria-hidden
             />
             <Image
-              src="/images/placeholders/hero.svg"
-              alt="Blush and sage bouquet illustration"
+              src={heroImage}
+              alt="Blush and sage bouquet"
               fill
               priority
               sizes="(min-width: 1024px) 45vw, 90vw"
@@ -105,105 +144,78 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Categories */}
+      {/* Coverage checker */}
       <section
-        aria-labelledby="categories-heading"
+        aria-label="Delivery coverage"
         className="border-y border-border/70 bg-ivory-100"
       >
+        <Container className="py-10 sm:py-12">
+          <CoverageChecker className="mx-auto max-w-3xl" />
+        </Container>
+      </section>
+
+      {/* Collections */}
+      <section aria-labelledby="collections-heading">
         <Container className="py-12 sm:py-16">
           <SectionHeading
             eyebrow="Collections"
             title="Flowers for every occasion and every ordinary Tuesday"
             description="Affordable everyday blooms sit beside our premium pieces. Pick what fits the moment."
-          />
-          <h2 id="categories-heading" className="sr-only">
-            Shop by collection
-          </h2>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {PRODUCT_CATEGORIES.map((category) => (
-              <li key={category}>
-                <Link
-                  href={`/shop/${category}`}
-                  className="group/cat flex h-full flex-col justify-between rounded-2xl bg-card p-5 ring-1 ring-foreground/10 transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-                >
-                  <div>
-                    <h3 className="font-serif text-xl font-semibold">
-                      {PRODUCT_CATEGORY_LABELS[category]}
-                    </h3>
-                    <p className="mt-1.5 text-sm text-muted-foreground">
-                      {categoryCopy[category].blurb}
-                    </p>
-                  </div>
-                  <p className="mt-6 flex items-center justify-between text-sm">
-                    <span className="text-sage-700">{categoryCopy[category].from}</span>
-                    <ArrowRightIcon
-                      aria-hidden
-                      className="size-4 text-muted-foreground transition-transform group-hover/cat:translate-x-0.5"
-                    />
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </section>
-
-      {/* Featured products */}
-      <section aria-labelledby="featured-heading">
-        <Container className="py-12 sm:py-16">
-          <SectionHeading
-            eyebrow="This week"
-            title="Featured blooms"
-            description="A taste of the catalog. Full shop, filters and search arrive in the next phase."
             action={
               <Button variant="link" className="px-0" asChild>
                 <Link href="/shop">
-                  View all
+                  Shop all
                   <ArrowRightIcon data-icon="inline-end" />
                 </Link>
               </Button>
             }
           />
-          <h2 id="featured-heading" className="sr-only">
-            Featured products
+          <h2 id="collections-heading" className="sr-only">
+            Featured collections
           </h2>
-          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 md:grid-cols-3">
-            {sampleProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} priority={index < 3} />
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Promise */}
-      <section aria-labelledby="promise-heading" className="bg-sage-700 text-ivory">
-        <Container className="py-12 sm:py-16">
-          <h2 id="promise-heading" className="sr-only">
-            Why Floriana
-          </h2>
-          <ul className="grid gap-8 md:grid-cols-3">
-            {promises.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="flex gap-4">
-                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-ivory/10 ring-1 ring-ivory/20">
-                  <Icon aria-hidden className="size-5" />
-                </span>
-                <div>
-                  <h3 className="font-serif text-xl font-semibold">{title}</h3>
-                  <p className="mt-1 text-sm text-ivory/80">{body}</p>
-                </div>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {collections.map((c, i) => (
+              <li key={c.id}>
+                <CollectionCard collection={c} priority={i < 2} />
               </li>
             ))}
           </ul>
         </Container>
       </section>
+
+      {/* Best sellers */}
+      {bestSellers.length > 0 ? (
+        <section
+          aria-label="Best sellers"
+          className="border-y border-border/70 bg-ivory-100"
+        >
+          <Container className="py-12 sm:py-16">
+            <SectionHeading
+              eyebrow="Most loved"
+              title="Best sellers"
+              description="The bouquets and orchids Cebu keeps coming back for."
+            />
+            <ul
+              className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 lg:grid-cols-4"
+              aria-label="Best sellers"
+            >
+              {bestSellers.map((p) => (
+                <li key={p.id}>
+                  <ProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      ) : null}
 
       {/* Story */}
       <section aria-labelledby="story-heading">
         <Container className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-2 lg:gap-16">
           <div className="relative order-2 aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] ring-1 ring-foreground/5 lg:order-1">
             <Image
-              src="/images/placeholders/orchid.svg"
-              alt="Orchid illustration in blush tones"
+              src={storyImage}
+              alt="Orchid in a ceramic pot"
               fill
               sizes="(min-width: 1024px) 40vw, 90vw"
               className="object-cover"
@@ -211,51 +223,98 @@ export default function HomePage() {
           </div>
           <div className="order-1 lg:order-2">
             <p className="text-xs font-medium tracking-[0.18em] text-sage-600 uppercase">
-              Our story
+              {story?.eyebrow ?? "Our story"}
             </p>
             <h2
               id="story-heading"
               className="mt-3 font-serif text-3xl font-semibold sm:text-4xl"
             >
-              Named after Lola Floriana, 86, and her orchids
+              {story?.title ?? "Named after Lola Floriana, 86, and her orchids"}
             </h2>
             <p className="mt-5 text-muted-foreground">
-              Every morning she checks the roots, mists the leaves and talks to the
-              blooms. We started Floriana Flowers to share that patience with Cebu: honest
-              everyday bunches, elegant bouquets, and orchid gifts that outlast the
-              occasion.
+              {story?.body ??
+                "Floriana is the owner's lola. At 86 she still loves caring for her orchids. We started Floriana Flowers to share that same patience with Cebu."}
             </p>
             <Button variant="outline" className="mt-7" asChild>
-              <Link href="/about">Read the full story</Link>
+              <Link href={story?.cta?.href ?? "/our-story"}>
+                {story?.cta?.label ?? "Read our story"}
+              </Link>
             </Button>
           </div>
         </Container>
       </section>
 
-      {/* Delivery CTA */}
-      <section
-        aria-labelledby="delivery-heading"
-        className="border-t border-border/70 bg-blush-100/60"
-      >
-        <Container className="flex flex-col items-start gap-6 py-12 sm:py-14 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-xl">
-            <h2
-              id="delivery-heading"
-              className="font-serif text-2xl font-semibold sm:text-3xl"
+      {/* Orchid spotlight */}
+      {orchids.length > 0 ? (
+        <section aria-labelledby="orchids-heading" className="bg-sage-700 text-ivory">
+          <Container className="py-12 sm:py-16">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <p className="mb-2 text-xs font-medium tracking-[0.18em] text-ivory/70 uppercase">
+                  Lola&apos;s Orchid Collection
+                </p>
+                <h2
+                  id="orchids-heading"
+                  className="font-serif text-2xl font-semibold sm:text-3xl"
+                >
+                  Living gifts that keep blooming
+                </h2>
+                <p className="mt-2 text-sm text-ivory/80 sm:text-base">
+                  Chosen the way Lola chooses hers: healthy roots, strong spikes, buds
+                  still to open.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                className="border-ivory/40 bg-transparent text-ivory hover:bg-ivory/10 hover:text-ivory"
+                asChild
+              >
+                <Link href="/collections/lolas-orchid-collection">
+                  See all orchids
+                  <ArrowRightIcon data-icon="inline-end" />
+                </Link>
+              </Button>
+            </div>
+            <ul
+              className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 [&_article_p]:text-ivory/70 [&_article_span]:text-ivory"
+              aria-label="Orchid gifts"
             >
-              Delivering across Cebu, on your schedule
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-              Check which zones we cover and pick a time slot that suits the recipient.
-              Guest checkout, no account needed.
-            </p>
-          </div>
-          <Button size="lg" className="h-11 px-6" asChild>
-            <Link href="/delivery">
-              See delivery zones
-              <ArrowRightIcon data-icon="inline-end" />
-            </Link>
-          </Button>
+              {orchids.map((p) => (
+                <li key={p.id}>
+                  <ProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      ) : null}
+
+      {/* Promise */}
+      <section aria-labelledby="promise-heading">
+        <Container className="py-12 sm:py-16">
+          <h2 id="promise-heading" className="sr-only">
+            Why Floriana
+          </h2>
+          <ul className="grid gap-8 md:grid-cols-3">
+            {promises.map(({ icon: Icon, title, body }) => (
+              <li key={title} className="flex gap-4">
+                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <Icon aria-hidden className="size-5" />
+                </span>
+                <div>
+                  <h3 className="font-serif text-xl font-semibold">{title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+
+      {/* Reviews */}
+      <section className="border-t border-border/70 bg-ivory-100">
+        <Container className="py-12 sm:py-16">
+          <ReviewsSection reviews={reviews} />
         </Container>
       </section>
     </>
