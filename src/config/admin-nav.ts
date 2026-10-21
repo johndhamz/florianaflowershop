@@ -1,13 +1,18 @@
 import type { LucideIcon } from "lucide-react";
+
+import type { Permission } from "@/modules/auth/permissions";
 import {
+  BarChart3Icon,
   BikeIcon,
   BoxesIcon,
   CreditCardIcon,
+  FileTextIcon,
   FlowerIcon,
   LayoutDashboardIcon,
   MapPinIcon,
   SettingsIcon,
   ShoppingBagIcon,
+  TagIcon,
   TruckIcon,
   UsersIcon,
 } from "lucide-react";
@@ -18,6 +23,8 @@ export type AdminNavItem = {
   icon: LucideIcon;
   /** Match nested routes (e.g. /admin/orders/123). */
   matchNested?: boolean;
+  /** Shown only to roles holding this permission (pages enforce it again server-side). */
+  permission?: Permission;
 };
 
 export const adminNav: readonly AdminNavItem[] = [
@@ -36,5 +43,26 @@ export const adminNav: readonly AdminNavItem[] = [
     matchNested: true,
   },
   { label: "Customers", href: "/admin/customers", icon: UsersIcon, matchNested: true },
+  {
+    label: "Reports",
+    href: "/admin/reports",
+    icon: BarChart3Icon,
+    matchNested: true,
+    permission: "reports.read",
+  },
+  {
+    label: "Promotions",
+    href: "/admin/promotions",
+    icon: TagIcon,
+    matchNested: true,
+    permission: "promos.manage",
+  },
+  {
+    label: "Content",
+    href: "/admin/content",
+    icon: FileTextIcon,
+    matchNested: true,
+    permission: "content.manage",
+  },
   { label: "Settings", href: "/admin/settings", icon: SettingsIcon, matchNested: true },
 ] as const;

@@ -13,12 +13,12 @@ async function getContentBlock(key: string): Promise<unknown> {
   cacheTag(CONTENT_TAG, `content:${key}`);
   const { data, error } = await createPublicClient()
     .from("site_content")
-    .select("data")
+    .select("data, published_data")
     .eq("key", key)
     .eq("is_published", true)
     .maybeSingle();
   if (error) throw new Error(`site_content ${key}: ${error.message}`);
-  return data?.data ?? null;
+  return data?.published_data ?? data?.data ?? null;
 }
 
 /** Typed, validated content read. Returns null when the block is missing or malformed. */
@@ -58,6 +58,12 @@ export const aboutSchema = z.object({
 export const deliveryInfoSchema = z.object({ title: z.string(), body: z.string() });
 export const faqsSchema = z.object({
   items: z.array(z.object({ q: z.string(), a: z.string() })),
+});
+export const seoSchema = z.object({
+  site_title: z.string(),
+  site_description: z.string(),
+  shop_title: z.string().optional(),
+  shop_description: z.string().optional(),
 });
 export const contactSchema = z.object({
   email: z.string(),

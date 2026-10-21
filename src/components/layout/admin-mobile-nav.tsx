@@ -1,10 +1,10 @@
 "use client";
 
 import { MenuIcon } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { Logo } from "@/components/brand/logo";
-import { AdminNav } from "@/components/layout/admin-nav";
+import { AdminNavCloseContext } from "@/components/layout/admin-nav";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-export function AdminMobileNav() {
+export function AdminMobileNav({ nav }: { nav: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,7 +38,9 @@ export function AdminMobileNav() {
           <SheetDescription className="sr-only">Admin navigation</SheetDescription>
         </SheetHeader>
         <div className="px-3 py-3">
-          <AdminNav onNavigate={() => setOpen(false)} />
+          <AdminNavCloseContext.Provider value={() => setOpen(false)}>
+            {nav}
+          </AdminNavCloseContext.Provider>
         </div>
       </SheetContent>
     </Sheet>

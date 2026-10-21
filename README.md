@@ -154,3 +154,4 @@ suite, and the sandbox checklist to run before going live.
 
 - [docs/inventory.md](docs/inventory.md) — materials, batches, recipes, preparation, reconciliation
 - [docs/delivery.md](docs/delivery.md) — dispatch, riders, exceptions, notifications
+- [docs/reports.md](docs/reports.md) — dashboard, report definitions & reconciliation rules, CSV export, promotions, CMS (sample exports in `docs/samples/`)

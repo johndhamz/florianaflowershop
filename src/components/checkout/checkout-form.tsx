@@ -2,7 +2,7 @@
 
 import { Loader2Icon, LockIcon, TagIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,7 @@ export function CheckoutForm({ cart, zones, paymentMethods }: Props) {
   const optionsKey = `${zoneId}:${date}`;
   const loadingSlots = !options || options.key !== optionsKey;
   const [promoInput, setPromoInput] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const [promo, setPromo] = useState<PromoCheck | null>(null);
   const [checkingPromo, setCheckingPromo] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"paymongo" | "bank_transfer">(
@@ -115,7 +116,9 @@ export function CheckoutForm({ cart, zones, paymentMethods }: Props) {
   const applyPromo = async () => {
     if (!promoInput.trim()) return;
     setCheckingPromo(true);
-    const res = await checkPromoCode(promoInput.trim(), goods);
+    const emailField = formRef.current?.elements.namedItem("sender.email");
+    const email = emailField instanceof HTMLInputElement ? emailField.value : undefined;
+    const res = await checkPromoCode(promoInput.trim(), goods, email);
     setPromo(res);
     setCheckingPromo(false);
     if (!res.valid) setErrors((e) => ({ ...e, promo_code: res.message }));
@@ -198,6 +201,7 @@ export function CheckoutForm({ cart, zones, paymentMethods }: Props) {
 
   return (
     <form
+      ref={formRef}
       onSubmit={onSubmit}
       noValidate
       aria-busy={pending}

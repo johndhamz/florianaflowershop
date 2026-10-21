@@ -22,8 +22,12 @@ export async function generateMetadata({
   const collection = await getCollection(slug);
   if (!collection) return { title: "Collection not found" };
   return {
-    title: collection.name,
-    description: collection.description ?? collection.tagline ?? undefined,
+    title: collection.seoTitle ?? collection.name,
+    description:
+      collection.seoDescription ??
+      collection.description ??
+      collection.tagline ??
+      undefined,
     alternates: { canonical: `/collections/${collection.slug}` },
   };
 }

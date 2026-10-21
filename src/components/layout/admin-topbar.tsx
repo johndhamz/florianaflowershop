@@ -8,10 +8,10 @@ import { AdminMobileNav } from "@/components/layout/admin-mobile-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function AdminTopbar({ userMenu }: { userMenu: ReactNode }) {
+export function AdminTopbar({ userMenu, nav }: { userMenu: ReactNode; nav: ReactNode }) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/90 px-4 backdrop-blur sm:px-6">
-      <AdminMobileNav />
+      <AdminMobileNav nav={nav} />
 
       <form
         role="search"

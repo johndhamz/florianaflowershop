@@ -79,7 +79,8 @@ test.describe("admin", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Dashboard" }),
     ).toBeVisible();
-    await expect(page.getByRole("table", { name: "Recent orders" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Key metrics" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Recent activity" })).toBeVisible();
 
     const isMobile = testInfo.project.name.includes("mobile");
     if (isMobile) {

@@ -1,8 +1,10 @@
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { AdminNav } from "@/components/layout/admin-nav";
+import { AdminSessionNav } from "@/components/layout/admin-session-nav";
 
 export function AdminSidebar() {
   return (
@@ -14,7 +16,9 @@ export function AdminSidebar() {
         </span>
       </div>
       <div className="flex flex-1 flex-col px-3 py-4">
-        <AdminNav />
+        <Suspense fallback={<AdminNav />}>
+          <AdminSessionNav />
+        </Suspense>
         <div className="mt-auto border-t border-sidebar-border pt-4">
           <Link
             href="/"

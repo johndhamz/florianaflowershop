@@ -1,0 +1,2 @@
+from,to,timezone,paid_orders,gross_sales_pesos,discounts_pesos,refunds_pesos,net_sales_pesos,delivery_fees_pesos,collected_pesos,unpaid_orders
+2026-09-21,2026-10-21,Asia/Manila,3,5080.00,0.00,2089.00,2991.00,447.00,3438.00,1

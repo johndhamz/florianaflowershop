@@ -14,6 +14,8 @@ const collections = [
     name: "Premium Bouquets",
     tagline: null,
     description: null,
+    seoTitle: null,
+    seoDescription: null,
     image: "/x.jpg",
     productCount: 3,
   },

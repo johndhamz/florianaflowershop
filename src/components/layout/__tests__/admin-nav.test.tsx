@@ -10,7 +10,7 @@ vi.mock("next/navigation", () => ({
 
 describe("AdminNav", () => {
   it("renders every admin destination and highlights nested active routes", () => {
-    render(<AdminNav />);
+    render(<AdminNav role="owner" />);
     const nav = screen.getByRole("navigation", { name: "Admin" });
     expect(within(nav).getAllByRole("link")).toHaveLength(adminNav.length);
     expect(within(nav).getByRole("link", { name: "Orders" })).toHaveAttribute(
@@ -21,5 +21,19 @@ describe("AdminNav", () => {
     expect(within(nav).getByRole("link", { name: "Dashboard" })).not.toHaveAttribute(
       "aria-current",
     );
+  });
+
+  it("hides permission-gated destinations from roles without them", () => {
+    render(<AdminNav role="support" />);
+    const nav = screen.getByRole("navigation", { name: "Admin" });
+    expect(within(nav).queryByRole("link", { name: "Reports" })).toBeNull();
+    expect(within(nav).queryByRole("link", { name: "Promotions" })).toBeNull();
+    expect(within(nav).getByRole("link", { name: "Payments" })).toBeInTheDocument();
+  });
+
+  it("hides gated destinations while the role is unknown", () => {
+    render(<AdminNav />);
+    const nav = screen.getByRole("navigation", { name: "Admin" });
+    expect(within(nav).queryByRole("link", { name: "Content" })).toBeNull();
   });
 });

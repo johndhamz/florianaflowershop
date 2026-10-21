@@ -449,7 +449,7 @@ begin
 
   -- Promo --------------------------------------------------------------------
   if nullif(trim(coalesce(p_input ->> 'promo_code', '')), '') is not null then
-    v_promo := public.validate_promo_code(p_input ->> 'promo_code', v_subtotal + v_addons);
+    v_promo := public.validate_promo_code(p_input ->> 'promo_code', v_subtotal + v_addons, p_input #>> '{sender,email}', p_cart_token);
     if not (v_promo ->> 'valid')::boolean then perform app.raise('INVALID_PROMO', v_promo ->> 'message'); end if;
     v_discount := (v_promo ->> 'discount_centavos')::int;
     v_promo_id := (v_promo ->> 'promo_id')::uuid;
@@ -530,7 +530,7 @@ begin
   select jsonb_agg(jsonb_build_object('variant_id', i ->> 'variant_id', 'quantity', (i ->> 'quantity')::int)) into v_lines from jsonb_array_elements(v_cart -> 'items') i;
   perform app.reserve_stock('order', v_order_id, 'order:' || v_order_id::text, v_lines, now() + v_hold);
 
-  if v_promo_id is not null then update public.promo_codes set uses_count = uses_count + 1 where id = v_promo_id; end if;
+  if v_promo_id is not null then perform app.record_promo_redemption(v_promo_id, v_order_id, p_input #>> '{sender,email}', v_discount); end if;
   update public.carts set status = 'converted', converted_order_id = v_order_id where id = v_cart_id;
 
   return jsonb_build_object('replayed', false, 'order_id', v_order_id, 'order_number', v_order_number, 'tracking_token', v_token,

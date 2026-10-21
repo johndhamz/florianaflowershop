@@ -351,6 +351,8 @@ export type Database = {
           is_active: boolean;
           name: string;
           position: number;
+          seo_description: string | null;
+          seo_title: string | null;
           slug: string;
           tagline: string | null;
           updated_at: string;
@@ -364,6 +366,8 @@ export type Database = {
           is_active?: boolean;
           name: string;
           position?: number;
+          seo_description?: string | null;
+          seo_title?: string | null;
           slug: string;
           tagline?: string | null;
           updated_at?: string;
@@ -376,6 +380,8 @@ export type Database = {
           is_active?: boolean;
           name?: string;
           position?: number;
+          seo_description?: string | null;
+          seo_title?: string | null;
           slug?: string;
           tagline?: string | null;
           updated_at?: string;
@@ -1885,15 +1891,19 @@ export type Database = {
       };
       promo_codes: {
         Row: {
+          applies_to: string;
           code: string;
           created_at: string;
           description: string | null;
+          eligible_collection_ids: string[];
           ends_at: string | null;
+          first_order_only: boolean;
           id: string;
           is_active: boolean;
           max_discount_centavos: number | null;
           max_uses: number | null;
           min_subtotal_centavos: number;
+          per_customer_limit: number | null;
           promo_type: Database["public"]["Enums"]["promo_type"];
           starts_at: string | null;
           updated_at: string;
@@ -1902,15 +1912,19 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          applies_to?: string;
           code: string;
           created_at?: string;
           description?: string | null;
+          eligible_collection_ids?: string[];
           ends_at?: string | null;
+          first_order_only?: boolean;
           id?: string;
           is_active?: boolean;
           max_discount_centavos?: number | null;
           max_uses?: number | null;
           min_subtotal_centavos?: number;
+          per_customer_limit?: number | null;
           promo_type: Database["public"]["Enums"]["promo_type"];
           starts_at?: string | null;
           updated_at?: string;
@@ -1918,15 +1932,19 @@ export type Database = {
           value: number;
         };
         Update: {
+          applies_to?: string;
           code?: string;
           created_at?: string;
           description?: string | null;
+          eligible_collection_ids?: string[];
           ends_at?: string | null;
+          first_order_only?: boolean;
           id?: string;
           is_active?: boolean;
           max_discount_centavos?: number | null;
           max_uses?: number | null;
           min_subtotal_centavos?: number;
+          per_customer_limit?: number | null;
           promo_type?: Database["public"]["Enums"]["promo_type"];
           starts_at?: string | null;
           updated_at?: string;
@@ -1934,6 +1952,49 @@ export type Database = {
           value?: number;
         };
         Relationships: [];
+      };
+      promo_redemptions: {
+        Row: {
+          created_at: string;
+          customer_email: string;
+          discount_centavos: number;
+          id: string;
+          order_id: string;
+          promo_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          customer_email: string;
+          discount_centavos: number;
+          id?: string;
+          order_id: string;
+          promo_id: string;
+        };
+        Update: {
+          created_at?: string;
+          customer_email?: string;
+          discount_centavos?: number;
+          id?: string;
+          order_id?: string;
+          promo_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "promo_redemptions_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: true;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "promo_redemptions_promo_id_fkey";
+            columns: ["promo_id"];
+            isOneToOne: false;
+            referencedRelation: "promo_codes";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       recipe_items: {
         Row: {
@@ -2039,6 +2100,9 @@ export type Database = {
           data: NonNullable<Json>;
           is_published: boolean;
           key: string;
+          published_at: string | null;
+          published_data: Json | null;
+          schema_hint: string | null;
           updated_at: string;
           updated_by: string | null;
         };
@@ -2048,6 +2112,9 @@ export type Database = {
           data?: NonNullable<Json>;
           is_published?: boolean;
           key: string;
+          published_at?: string | null;
+          published_data?: Json | null;
+          schema_hint?: string | null;
           updated_at?: string;
           updated_by?: string | null;
         };
@@ -2056,6 +2123,9 @@ export type Database = {
           data?: NonNullable<Json>;
           is_published?: boolean;
           key?: string;
+          published_at?: string | null;
+          published_data?: Json | null;
+          schema_hint?: string | null;
           updated_at?: string;
           updated_by?: string | null;
         };
@@ -2565,6 +2635,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      dashboard_summary: { Args: Record<PropertyKey, never>; Returns: Json };
       dispatch_board: { Args: { p_date?: string }; Returns: Json };
       enqueue_low_stock_digest: { Args: Record<PropertyKey, never>; Returns: number };
       expire_stock_batches: { Args: Record<PropertyKey, never>; Returns: number };
@@ -2698,6 +2769,75 @@ export type Database = {
         Args: { p_reason?: string; p_reference_id: string; p_reference_type: string };
         Returns: number;
       };
+      report_best_sellers: {
+        Args: { p_from: string; p_limit?: number; p_to: string };
+        Returns: {
+          orders: number;
+          product_name: string;
+          revenue_centavos: number;
+          sku: string;
+          units: number;
+          variant_name: string;
+        }[];
+      };
+      report_orders_by_date: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          day: string;
+          delivery_fees_centavos: number;
+          discounts_centavos: number;
+          gross_centavos: number;
+          net_centavos: number;
+          paid_orders: number;
+          refunds_centavos: number;
+        }[];
+      };
+      report_payment_methods: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          amount_centavos: number;
+          method: string;
+          payments: number;
+          provider: string;
+          refunded_centavos: number;
+        }[];
+      };
+      report_product_margin: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          estimated_cost_centavos: number;
+          estimated_margin_centavos: number;
+          estimated_margin_pct: number;
+          is_estimate: boolean;
+          product_name: string;
+          revenue_centavos: number;
+          sku: string;
+          units: number;
+          variant_name: string;
+        }[];
+      };
+      report_sales_by_collection: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          collection: string;
+          orders: number;
+          revenue_centavos: number;
+          units: number;
+        }[];
+      };
+      report_sales_summary: { Args: { p_from: string; p_to: string }; Returns: Json };
+      report_wastage: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          estimated_cost_centavos: number;
+          events: number;
+          material: string;
+          quantity: number;
+          reason: string;
+          sku: string;
+          unit: string;
+        }[];
+      };
       reschedule_delivery: {
         Args: {
           p_delivery_date: string;
@@ -2779,7 +2919,12 @@ export type Database = {
         Returns: undefined;
       };
       validate_promo_code: {
-        Args: { p_code: string; p_goods_centavos: number };
+        Args: {
+          p_cart_token?: string;
+          p_code: string;
+          p_email?: string;
+          p_goods_centavos: number;
+        };
         Returns: Json;
       };
       variant_availability: { Args: { p_variant_id: string }; Returns: string };

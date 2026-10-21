@@ -85,6 +85,8 @@ export type CollectionSummary = {
   name: string;
   tagline: string | null;
   description: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
   image: string;
   productCount: number;
 };

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { type ReactNode, Suspense } from "react";
 
+import { AdminNav } from "@/components/layout/admin-nav";
+import { AdminSessionNav } from "@/components/layout/admin-session-nav";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { AdminTopbar } from "@/components/layout/admin-topbar";
 import {
@@ -26,6 +28,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <AdminTopbar
+          nav={
+            <Suspense fallback={<AdminNav />}>
+              <AdminSessionNav />
+            </Suspense>
+          }
           userMenu={
             <Suspense fallback={<AdminUserMenuSkeleton />}>
               <AdminUserMenu />

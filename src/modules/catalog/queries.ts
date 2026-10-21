@@ -155,6 +155,8 @@ export async function listCollections(): Promise<CollectionSummary[]> {
     name: c.name,
     tagline: c.tagline,
     description: c.description,
+    seoTitle: c.seo_title,
+    seoDescription: c.seo_description,
     image: productImageSrc(c.image_path, c.slug),
     productCount: counts.get(c.id) ?? 0,
   }));

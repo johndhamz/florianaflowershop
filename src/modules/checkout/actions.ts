@@ -55,10 +55,16 @@ export async function getDeliveryOptions(
 export async function checkPromoCode(
   code: string,
   goodsCentavos: number,
+  email?: string,
 ): Promise<PromoCheck> {
+  // Eligibility rules (per-customer limits, first-order-only, collection restrictions) need the
+  // shopper's email and the cart; the final check happens again inside place_order.
+  const cartToken = await readCartToken();
   const { data, error } = await createPublicClient().rpc("validate_promo_code", {
     p_code: code,
     p_goods_centavos: goodsCentavos,
+    p_email: email?.trim() || undefined,
+    p_cart_token: cartToken ?? undefined,
   });
   if (error) return { valid: false, message: "Could not check the promo code." };
   return data as PromoCheck;
