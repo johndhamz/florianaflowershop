@@ -52,7 +52,8 @@ Each runbook: _symptom → check → action_. Staff roles: **owner** (everything
 
 ## R7 · Notifications not sending
 
-- `/api/jobs/notifications` runs every minute. Check Vercel cron logs; `notifications.status`
+- `/api/jobs/notifications` runs every minute on Pro (daily on the Hobby staging plan). Check
+  Vercel cron logs; `notifications.status`
   `failed` rows show `last_error`. Resend 4xx = bad address or key (fix and requeue by setting
   `status='queued', next_attempt_at=now()`); 429/5xx retry automatically with back-off.
 - Without `RESEND_API_KEY` the app logs instead of sending: production must have the key.

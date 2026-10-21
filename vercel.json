@@ -3,11 +3,11 @@
   "crons": [
     {
       "path": "/api/jobs/expire-reservations",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 16 * * *"
     },
     {
       "path": "/api/jobs/notifications",
-      "schedule": "* * * * *"
+      "schedule": "5 16 * * *"
     },
     {
       "path": "/api/jobs/retention",

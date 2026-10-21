@@ -56,9 +56,14 @@ Environment variables (Production and Preview separately):
 | `RESEND_API_KEY`                              | `re_…`                              | Without it, emails are only logged (redacted)         |
 | `ALERT_WEBHOOK_URL`                           | Slack/Discord/PagerDuty inbound URL | Optional; unhandled server errors post here           |
 
-Vercel settings: Framework **Next.js**, Node **24**, Region **sin1** (Singapore). Crons come from
-`vercel.json` (expire reservations every 5 min, notifications every minute, retention weekly).
-Protect the `main` branch; production deploys only from `main`.
+Vercel settings: Framework **Next.js**, Node **24**, Region pinned in `vercel.json` to the
+Supabase project's region (`syd1` for the current `ap-southeast-2` project). Crons come from
+`vercel.json`. **Production needs the Vercel Pro plan**: the Hobby plan rejects any cron that runs
+more than once a day, so the committed schedules are the Hobby-compatible daily ones (reservation
+expiry 00:00 Manila, notifications 00:05 Manila, retention weekly). Before launch, on Pro, set
+`/api/jobs/expire-reservations` to `*/5 * * * *` and `/api/jobs/notifications` to `* * * * *`;
+until then abandoned checkouts hold stock and delivery slots for up to a day and emails go out once
+a day. Protect the `main` branch; production deploys only from `main`.
 
 ## 2. Release procedure (every deploy)
 

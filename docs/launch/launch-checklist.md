@@ -27,6 +27,8 @@ Tick every box before DNS points at Vercel. Owner signs the last section.
 
 - [ ] All variables from `docs/launch/deployment.md` §1 set for **Production**; `ALLOW_MOCK_PAYMENTS` **unset**; `PAYMENT_PROVIDER=paymongo`.
 - [ ] `CRON_SECRET` set and the three crons visible under Settings → Cron Jobs.
+- [ ] Vercel **Pro** plan active and `vercel.json` schedules restored to every 5 min (reservations)
+      and every minute (notifications); Hobby only allows daily crons.
 - [ ] Custom domain + HTTPS active; `www` → apex redirect.
 - [ ] Deployment protection on previews; production deploys only from `main`.
 - [ ] `ALERT_WEBHOOK_URL` set; a test error (`throw` on a preview) reached the channel.
