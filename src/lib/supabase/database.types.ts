@@ -139,10 +139,13 @@ export type Database = {
           currency: string;
           extras: NonNullable<Json>;
           id: number;
+          low_stock_alert_email: string | null;
+          notifications_from_email: string;
           online_payments_enabled: boolean;
           reservation_ttl_minutes: number;
           same_day_cutoff: string;
           shop_name: string;
+          sms_enabled: boolean;
           social: NonNullable<Json>;
           tagline: string;
           timezone: string;
@@ -161,10 +164,13 @@ export type Database = {
           currency?: string;
           extras?: NonNullable<Json>;
           id?: number;
+          low_stock_alert_email?: string | null;
+          notifications_from_email?: string;
           online_payments_enabled?: boolean;
           reservation_ttl_minutes?: number;
           same_day_cutoff?: string;
           shop_name?: string;
+          sms_enabled?: boolean;
           social?: NonNullable<Json>;
           tagline?: string;
           timezone?: string;
@@ -182,10 +188,13 @@ export type Database = {
           currency?: string;
           extras?: NonNullable<Json>;
           id?: number;
+          low_stock_alert_email?: string | null;
+          notifications_from_email?: string;
           online_payments_enabled?: boolean;
           reservation_ttl_minutes?: number;
           same_day_cutoff?: string;
           shop_name?: string;
+          sms_enabled?: boolean;
           social?: NonNullable<Json>;
           tagline?: string;
           timezone?: string;
@@ -413,6 +422,67 @@ export type Database = {
         };
         Relationships: [];
       };
+      delivery_events: {
+        Row: {
+          actor_id: string | null;
+          created_at: string;
+          event_type: string;
+          exception: Database["public"]["Enums"]["delivery_exception"] | null;
+          id: string;
+          latitude: number | null;
+          longitude: number | null;
+          note: string | null;
+          order_id: string;
+          proof_photo_path: string | null;
+          received_by: string | null;
+          rider_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          actor_id?: string | null;
+          created_at?: string;
+          event_type: string;
+          exception?: Database["public"]["Enums"]["delivery_exception"] | null;
+          id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          note?: string | null;
+          order_id: string;
+          proof_photo_path?: string | null;
+          received_by?: string | null;
+          rider_id?: string | null;
+        };
+        Update: {
+          actor_id?: string | null;
+          created_at?: string;
+          event_type?: string;
+          exception?: Database["public"]["Enums"]["delivery_exception"] | null;
+          id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          note?: string | null;
+          order_id?: string;
+          proof_photo_path?: string | null;
+          received_by?: string | null;
+          rider_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "delivery_events_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "delivery_events_rider_id_fkey";
+            columns: ["rider_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       delivery_slot_allocations: {
         Row: {
           booked: number;
@@ -610,8 +680,11 @@ export type Database = {
           channel: Database["public"]["Enums"]["notification_channel"];
           created_at: string;
           customer_id: string | null;
+          dedupe_key: string | null;
           error: string | null;
           id: string;
+          last_error: string | null;
+          next_attempt_at: string;
           order_id: string | null;
           payload: NonNullable<Json>;
           provider: string | null;
@@ -630,8 +703,11 @@ export type Database = {
           channel: Database["public"]["Enums"]["notification_channel"];
           created_at?: string;
           customer_id?: string | null;
+          dedupe_key?: string | null;
           error?: string | null;
           id?: string;
+          last_error?: string | null;
+          next_attempt_at?: string;
           order_id?: string | null;
           payload?: NonNullable<Json>;
           provider?: string | null;
@@ -649,8 +725,11 @@ export type Database = {
           channel?: Database["public"]["Enums"]["notification_channel"];
           created_at?: string;
           customer_id?: string | null;
+          dedupe_key?: string | null;
           error?: string | null;
           id?: string;
+          last_error?: string | null;
+          next_attempt_at?: string;
           order_id?: string | null;
           payload?: NonNullable<Json>;
           provider?: string | null;
@@ -1075,7 +1154,10 @@ export type Database = {
           customer_id: string;
           customer_name: string;
           customer_phone: string;
+          delivered_at: string | null;
+          delivery_attempts: number;
           delivery_date: string | null;
+          delivery_failed_at: string | null;
           delivery_fee_centavos: number;
           delivery_instructions: string | null;
           delivery_slot_allocation_id: string | null;
@@ -1084,6 +1166,7 @@ export type Database = {
           delivery_zone_id: string | null;
           delivery_zone_snapshot: Json | null;
           discount_centavos: number;
+          dispatched_at: string | null;
           fulfillment_status: Database["public"]["Enums"]["fulfillment_status"];
           gift_message: string | null;
           id: string;
@@ -1099,6 +1182,8 @@ export type Database = {
           promo_code_snapshot: string | null;
           ready_at: string | null;
           reservation_expires_at: string | null;
+          rider_assigned_at: string | null;
+          rider_assigned_by: string | null;
           source: string;
           status: Database["public"]["Enums"]["order_status"];
           subtotal_centavos: number;
@@ -1122,7 +1207,10 @@ export type Database = {
           customer_id: string;
           customer_name: string;
           customer_phone: string;
+          delivered_at?: string | null;
+          delivery_attempts?: number;
           delivery_date?: string | null;
+          delivery_failed_at?: string | null;
           delivery_fee_centavos?: number;
           delivery_instructions?: string | null;
           delivery_slot_allocation_id?: string | null;
@@ -1131,6 +1219,7 @@ export type Database = {
           delivery_zone_id?: string | null;
           delivery_zone_snapshot?: Json | null;
           discount_centavos?: number;
+          dispatched_at?: string | null;
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"];
           gift_message?: string | null;
           id?: string;
@@ -1146,6 +1235,8 @@ export type Database = {
           promo_code_snapshot?: string | null;
           ready_at?: string | null;
           reservation_expires_at?: string | null;
+          rider_assigned_at?: string | null;
+          rider_assigned_by?: string | null;
           source?: string;
           status?: Database["public"]["Enums"]["order_status"];
           subtotal_centavos: number;
@@ -1168,7 +1259,10 @@ export type Database = {
           customer_id?: string;
           customer_name?: string;
           customer_phone?: string;
+          delivered_at?: string | null;
+          delivery_attempts?: number;
           delivery_date?: string | null;
+          delivery_failed_at?: string | null;
           delivery_fee_centavos?: number;
           delivery_instructions?: string | null;
           delivery_slot_allocation_id?: string | null;
@@ -1177,6 +1271,7 @@ export type Database = {
           delivery_zone_id?: string | null;
           delivery_zone_snapshot?: Json | null;
           discount_centavos?: number;
+          dispatched_at?: string | null;
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"];
           gift_message?: string | null;
           id?: string;
@@ -1192,6 +1287,8 @@ export type Database = {
           promo_code_snapshot?: string | null;
           ready_at?: string | null;
           reservation_expires_at?: string | null;
+          rider_assigned_at?: string | null;
+          rider_assigned_by?: string | null;
           source?: string;
           status?: Database["public"]["Enums"]["order_status"];
           subtotal_centavos?: number;
@@ -2373,6 +2470,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      assign_rider: { Args: { p_order_id: string; p_rider_id?: string }; Returns: Json };
       attach_payment_proof: {
         Args: {
           p_order_number: string;
@@ -2380,6 +2478,10 @@ export type Database = {
           p_storage_path: string;
           p_token: string;
         };
+        Returns: Json;
+      };
+      authorize_delivery_retry: {
+        Args: { p_note?: string; p_order_id: string };
         Returns: Json;
       };
       cancel_order: { Args: { p_order_id: string; p_reason: string }; Returns: Json };
@@ -2397,6 +2499,48 @@ export type Database = {
       cart_remove_unavailable: { Args: { p_token: string }; Returns: Json };
       cart_update_item: {
         Args: { p_item_id: string; p_quantity: number; p_token: string };
+        Returns: Json;
+      };
+      claim_due_notifications: {
+        Args: { p_limit?: number };
+        Returns: {
+          attempts: number;
+          channel: Database["public"]["Enums"]["notification_channel"];
+          created_at: string;
+          customer_id: string | null;
+          dedupe_key: string | null;
+          error: string | null;
+          id: string;
+          last_error: string | null;
+          next_attempt_at: string;
+          order_id: string | null;
+          payload: NonNullable<Json>;
+          provider: string | null;
+          provider_message_id: string | null;
+          recipient: string;
+          scheduled_for: string;
+          sent_at: string | null;
+          status: Database["public"]["Enums"]["notification_status"];
+          subject: string | null;
+          template: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "notifications";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      complete_delivery: {
+        Args: {
+          p_latitude?: number;
+          p_longitude?: number;
+          p_note?: string;
+          p_order_id: string;
+          p_proof_photo_path: string;
+          p_received_by?: string;
+        };
         Returns: Json;
       };
       complete_preparation: {
@@ -2421,9 +2565,20 @@ export type Database = {
         };
         Returns: Json;
       };
+      dispatch_board: { Args: { p_date?: string }; Returns: Json };
+      enqueue_low_stock_digest: { Args: Record<PropertyKey, never>; Returns: number };
       expire_stock_batches: { Args: Record<PropertyKey, never>; Returns: number };
       expire_stock_reservations: { Args: Record<PropertyKey, never>; Returns: number };
       expire_unpaid_orders: { Args: Record<PropertyKey, never>; Returns: number };
+      fail_delivery: {
+        Args: {
+          p_exception: Database["public"]["Enums"]["delivery_exception"];
+          p_note: string;
+          p_order_id: string;
+          p_photo_path?: string;
+        };
+        Returns: Json;
+      };
       find_delivery_zone: {
         Args: { p_query: string };
         Returns: {
@@ -2451,6 +2606,17 @@ export type Database = {
       list_delivery_options: {
         Args: { p_delivery_date: string; p_zone_id: string };
         Returns: Json;
+      };
+      mark_notification_result: {
+        Args: {
+          p_error?: string;
+          p_id: string;
+          p_max_attempts?: number;
+          p_ok: boolean;
+          p_provider?: string;
+          p_provider_message_id?: string;
+        };
+        Returns: undefined;
       };
       mark_order_paid: {
         Args: {
@@ -2532,6 +2698,15 @@ export type Database = {
         Args: { p_reason?: string; p_reference_id: string; p_reference_type: string };
         Returns: number;
       };
+      reschedule_delivery: {
+        Args: {
+          p_delivery_date: string;
+          p_note?: string;
+          p_order_id: string;
+          p_slot_id: string;
+        };
+        Returns: Json;
+      };
       reserve_delivery_slot: {
         Args: { p_delivery_date: string; p_slot_id: string };
         Returns: string;
@@ -2568,6 +2743,17 @@ export type Database = {
         Args: { p_approve: boolean; p_note?: string; p_substitution_id: string };
         Returns: Json;
       };
+      rider_deliveries: { Args: { p_include_done?: boolean }; Returns: Json };
+      set_slot_capacity: {
+        Args: {
+          p_blocked?: boolean;
+          p_capacity: number;
+          p_delivery_date: string;
+          p_slot_id: string;
+        };
+        Returns: Json;
+      };
+      start_delivery: { Args: { p_order_id: string }; Returns: Json };
       start_preparation: { Args: { p_order_id: string }; Returns: Json };
       upcoming_material_requirements: {
         Args: { p_days?: number };
@@ -2605,6 +2791,13 @@ export type Database = {
     };
     Enums: {
       cart_status: "active" | "converted" | "abandoned" | "merged";
+      delivery_exception:
+        | "recipient_unavailable"
+        | "wrong_address"
+        | "refused"
+        | "weather"
+        | "vehicle"
+        | "other";
       delivery_status:
         | "pending"
         | "scheduled"
@@ -2757,6 +2950,14 @@ export const Constants = {
   public: {
     Enums: {
       cart_status: ["active", "converted", "abandoned", "merged"],
+      delivery_exception: [
+        "recipient_unavailable",
+        "wrong_address",
+        "refused",
+        "weather",
+        "vehicle",
+        "other",
+      ],
       delivery_status: [
         "pending",
         "scheduled",

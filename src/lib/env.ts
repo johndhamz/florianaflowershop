@@ -36,6 +36,8 @@ const serverSchema = z.object({
     .transform((v) => v === "true"),
   // Shared secret for scheduled job endpoints (/api/jobs/*).
   CRON_SECRET: z.string().min(16).optional(),
+  // Transactional email. Without a key the "log" provider records sends in memory.
+  RESEND_API_KEY: z.string().startsWith("re_").optional(),
 });
 
 export type PublicEnv = z.infer<typeof publicSchema>;

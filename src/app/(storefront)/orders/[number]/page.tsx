@@ -98,6 +98,26 @@ async function Tracking({
               {PAYMENT_STATUS_META[order.payment_status as PaymentStatus]?.label ??
                 order.payment_status}
             </StatusBadge>
+            {order.delivery_status !== "pending" ? (
+              <StatusBadge
+                tone={
+                  order.delivery_status === "delivered"
+                    ? "success"
+                    : order.delivery_status === "failed"
+                      ? "danger"
+                      : order.delivery_status === "out_for_delivery"
+                        ? "warning"
+                        : "info"
+                }
+                dot={false}
+              >
+                Delivery:{" "}
+                {order.delivery_status === "out_for_delivery"
+                  ? "On the way"
+                  : order.delivery_status.charAt(0).toUpperCase() +
+                    order.delivery_status.slice(1)}
+              </StatusBadge>
+            ) : null}
             {cancelled && order.cancellation_reason === "payment_timeout" ? (
               <StatusBadge tone="neutral" dot={false}>
                 Payment window expired

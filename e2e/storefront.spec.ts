@@ -242,9 +242,9 @@ test.describe("content pages", () => {
     await page.getByLabel("Barangay or city").fill("Talamban");
     await page.getByRole("button", { name: "Check coverage" }).click();
     await expect(page.getByText(/Yes, we deliver to Talamban, Cebu City/)).toBeVisible();
-    await page.getByLabel("Barangay or city").fill("Bogo");
+    await page.getByLabel("Barangay or city").fill("Zamboanga");
     await page.getByRole("button", { name: "Check coverage" }).click();
-    await expect(page.getByText(/don't deliver to “Bogo” yet/)).toBeVisible();
+    await expect(page.getByText(/don't deliver to “Zamboanga” yet/)).toBeVisible();
 
     await noHorizontalOverflow(page);
     await page.screenshot({

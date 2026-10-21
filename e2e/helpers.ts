@@ -1,6 +1,8 @@
 import { expect, type Page } from "@playwright/test";
 
 export async function loginAsStaff(page: Page, email: string) {
+  // Drop any existing session (customer cart or another staff member) first.
+  await page.context().clearCookies();
   await page.goto("/admin/login");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("Floriana!2026");

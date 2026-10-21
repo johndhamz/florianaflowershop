@@ -47,6 +47,10 @@ Storefront routes:
 - `/our-story`, `/delivery`, `/faqs`, `/contact`, `/privacy`
 - `/admin` – staff back office (sign-in required; see docs/database.md for seed accounts)
 - `/admin/payments` – verify bank transfers, review online payments, record refunds
+- `/admin/inventory/*` – materials, suppliers, batches, receive, wastage, movements, recipes, reconciliation
+- `/admin/prep` – florist preparation queue and workspace
+- `/admin/dispatch` – delivery assignment board · `/admin/rider` – rider dashboard · `/admin/delivery-settings` – zones, slots, capacity
+- `/api/jobs/notifications` – cron: notification outbox + daily low-stock digest
 - `/sitemap.xml`, `/robots.txt`
 
 ## Scripts
@@ -145,3 +149,8 @@ See [docs/database.md](docs/database.md) for the schema, RLS matrix, transaction
 See [docs/payments.md](docs/payments.md) for the flow, transaction-safety guarantees, the
 PayMongo adapter (every field cited to the official docs), the mock gateway used by the E2E
 suite, and the sandbox checklist to run before going live.
+
+## Operations guides
+
+- [docs/inventory.md](docs/inventory.md) — materials, batches, recipes, preparation, reconciliation
+- [docs/delivery.md](docs/delivery.md) — dispatch, riders, exceptions, notifications

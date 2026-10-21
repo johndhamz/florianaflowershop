@@ -682,8 +682,7 @@ begin
     -- Reservations now hold until fulfilment.
     update public.stock_reservations set expires_at = null where reference_type = 'order' and reference_id = v_order.id and status = 'active';
 
-    insert into public.notifications (order_id, customer_id, channel, template, recipient, subject, payload)
-    values (v_order.id, v_order.customer_id, 'email', 'order.confirmed', v_order.customer_email, 'Your Floriana order ' || v_order.order_number || ' is confirmed', jsonb_build_object('order_number', v_order.order_number));
+    -- Customer notification is enqueued by the orders_notify trigger (migration 1500).
   end if;
 
   return jsonb_build_object('order_id', v_order.id, 'order_number', v_order.order_number, 'already_paid', false, 'flags', v_flags);

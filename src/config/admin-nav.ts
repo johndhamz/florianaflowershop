@@ -1,9 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  BikeIcon,
   BoxesIcon,
   CreditCardIcon,
   FlowerIcon,
   LayoutDashboardIcon,
+  MapPinIcon,
   SettingsIcon,
   ShoppingBagIcon,
   TruckIcon,
@@ -25,7 +27,14 @@ export const adminNav: readonly AdminNavItem[] = [
   { label: "Products", href: "/admin/products", icon: FlowerIcon, matchNested: true },
   { label: "Preparation", href: "/admin/prep", icon: FlowerIcon, matchNested: true },
   { label: "Inventory", href: "/admin/inventory", icon: BoxesIcon, matchNested: true },
-  { label: "Deliveries", href: "/admin/deliveries", icon: TruckIcon, matchNested: true },
+  { label: "Dispatch", href: "/admin/dispatch", icon: TruckIcon, matchNested: true },
+  { label: "My deliveries", href: "/admin/rider", icon: BikeIcon, matchNested: true },
+  {
+    label: "Delivery settings",
+    href: "/admin/delivery-settings",
+    icon: MapPinIcon,
+    matchNested: true,
+  },
   { label: "Customers", href: "/admin/customers", icon: UsersIcon, matchNested: true },
   { label: "Settings", href: "/admin/settings", icon: SettingsIcon, matchNested: true },
 ] as const;
