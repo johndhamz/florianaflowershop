@@ -142,14 +142,14 @@ export function CartView({ cart: initial }: { cart: Cart }) {
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="font-serif text-lg leading-tight font-semibold">
+                    <h2 className="font-serif text-lg leading-tight font-semibold">
                       <Link
                         href={`/shop/${line.product_slug}`}
                         className="hover:underline"
                       >
                         {line.product_name}
                       </Link>
-                    </h3>
+                    </h2>
                     <p className="text-sm text-muted-foreground">{line.variant_name}</p>
                     {line.add_ons.length > 0 ? (
                       <ul className="mt-1 text-xs text-muted-foreground">

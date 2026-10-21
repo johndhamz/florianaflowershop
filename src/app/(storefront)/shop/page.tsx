@@ -36,6 +36,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/shop">) {
         occasions={occasions}
         resultCount={page.total}
       />
+      <h2 className="sr-only">Products</h2>
       <ProductGrid products={page.items} />
       <Pagination params={params} pageCount={page.pageCount} basePath="/shop" />
     </Container>

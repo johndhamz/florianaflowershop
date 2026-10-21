@@ -38,6 +38,8 @@ const serverSchema = z.object({
   CRON_SECRET: z.string().min(16).optional(),
   // Transactional email. Without a key the "log" provider records sends in memory.
   RESEND_API_KEY: z.string().startsWith("re_").optional(),
+  // Optional inbound webhook (Slack/Discord/PagerDuty) for unhandled server errors.
+  ALERT_WEBHOOK_URL: z.url().optional(),
 });
 
 export type PublicEnv = z.infer<typeof publicSchema>;

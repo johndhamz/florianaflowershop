@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 
 import type { Json, TablesInsert } from "@/lib/supabase/database.types";
@@ -49,7 +49,7 @@ export async function saveContent(
       .upsert(row, { onConflict: "key" });
     if (error) return { ok: false, error: error.message };
     if (publish) {
-      revalidateTag(CONTENT_TAG, "max");
+      updateTag(CONTENT_TAG);
       revalidatePath("/", "layout");
     }
     revalidatePath("/admin/content");
@@ -68,7 +68,7 @@ export async function unpublishContent(key: ContentKey): Promise<ActionResult> {
       .update({ is_published: false })
       .eq("key", key);
     if (error) return { ok: false, error: error.message };
-    revalidateTag(CONTENT_TAG, "max");
+    updateTag(CONTENT_TAG);
     revalidatePath("/", "layout");
     revalidatePath("/admin/content");
     return { ok: true, message: "Unpublished. The storefront falls back to defaults." };
@@ -111,7 +111,7 @@ export async function saveCollectionSeo(
       })
       .eq("id", id);
     if (error) return { ok: false, error: error.message };
-    revalidateTag("catalog", "max");
+    updateTag("catalog");
     revalidatePath("/", "layout");
     revalidatePath("/admin/content");
     return { ok: true, message: "Collection updated." };

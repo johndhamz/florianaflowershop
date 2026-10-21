@@ -155,3 +155,15 @@ suite, and the sandbox checklist to run before going live.
 - [docs/inventory.md](docs/inventory.md) — materials, batches, recipes, preparation, reconciliation
 - [docs/delivery.md](docs/delivery.md) — dispatch, riders, exceptions, notifications
 - [docs/reports.md](docs/reports.md) — dashboard, report definitions & reconciliation rules, CSV export, promotions, CMS (sample exports in `docs/samples/`)
+
+## Launch (Phase 8)
+
+- [docs/launch/test-report.md](docs/launch/test-report.md) — what was executed and the results
+- [docs/launch/defects.md](docs/launch/defects.md) — critical defect list and status
+- [docs/launch/security-review.md](docs/launch/security-review.md) — findings, fixes, residual risks
+- [docs/launch/performance.md](docs/launch/performance.md) — Lighthouse results and budgets
+- [docs/launch/deployment.md](docs/launch/deployment.md) — environments, release procedure, rollback
+- [docs/launch/runbooks.md](docs/launch/runbooks.md) — operational runbooks
+- [docs/launch/launch-checklist.md](docs/launch/launch-checklist.md) — go/no-go checklist
+
+Health probe: `GET /api/health`. Unhandled server errors are reported through `src/instrumentation.ts` (optional `ALERT_WEBHOOK_URL`).

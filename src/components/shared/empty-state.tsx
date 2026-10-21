@@ -34,7 +34,7 @@ export function EmptyState({
       <span className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
         <Icon aria-hidden className="size-5" />
       </span>
-      <h3 className="font-serif text-lg font-semibold text-foreground">{title}</h3>
+      <h2 className="font-serif text-lg font-semibold text-foreground">{title}</h2>
       {description ? (
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">{description}</p>
       ) : null}

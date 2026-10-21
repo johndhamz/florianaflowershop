@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCentavos, toCentavos } from "@/lib/money";
+import { assertCentavos, formatCentavos, toCentavos } from "@/lib/money";
 
 describe("money", () => {
   it("formats integer centavos as Philippine Peso", () => {
@@ -9,10 +9,11 @@ describe("money", () => {
     expect(formatCentavos(5)).toBe("₱0.05");
   });
 
-  it("rejects non-integer or negative amounts", () => {
+  it("rejects non-integer amounts and formats negatives with a minus sign", () => {
     expect(() => formatCentavos(12.5)).toThrow(TypeError);
-    expect(() => formatCentavos(-1)).toThrow(TypeError);
     expect(() => formatCentavos(Number.NaN)).toThrow(TypeError);
+    expect(formatCentavos(-143900)).toBe("−₱1,439.00");
+    expect(() => assertCentavos(-1)).toThrow(TypeError);
   });
 
   it("converts pesos to centavos with rounding", () => {

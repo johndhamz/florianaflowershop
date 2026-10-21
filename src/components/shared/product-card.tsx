@@ -73,7 +73,7 @@ export function ProductCard({ product, className, priority = false }: ProductCar
 
       <div className="flex flex-col gap-1">
         {product.collectionName ? (
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">
+          <p className="text-xs tracking-wide text-foreground/75 uppercase">
             {product.collectionName}
           </p>
         ) : null}

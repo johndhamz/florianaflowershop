@@ -137,6 +137,7 @@ export default async function HomePage() {
               alt="Blush and sage bouquet"
               fill
               priority
+              fetchPriority="high"
               sizes="(min-width: 1024px) 45vw, 90vw"
               className="rounded-[2rem] object-cover ring-1 ring-foreground/5"
             />
@@ -250,7 +251,7 @@ export default async function HomePage() {
           <Container className="py-12 sm:py-16">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div className="max-w-2xl">
-                <p className="mb-2 text-xs font-medium tracking-[0.18em] text-ivory/70 uppercase">
+                <p className="mb-2 text-xs font-medium tracking-[0.18em] text-ivory/85 uppercase">
                   Lola&apos;s Orchid Collection
                 </p>
                 <h2
@@ -276,7 +277,7 @@ export default async function HomePage() {
               </Button>
             </div>
             <ul
-              className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 [&_article_p]:text-ivory/70 [&_article_span]:text-ivory"
+              className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 [&_article_p]:text-ivory/85 [&_article_span:not([data-slot=status-badge])]:text-ivory"
               aria-label="Orchid gifts"
             >
               {orchids.map((p) => (

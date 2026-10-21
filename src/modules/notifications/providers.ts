@@ -59,7 +59,12 @@ export const logEmailProvider: EmailProvider & {
   sent: [],
   async send({ to, subject }) {
     this.sent.push({ to, subject });
-    console.info(`[notifications] email → ${to}: ${subject}`);
+    // Never print addresses outside local development: logs are shipped to Vercel.
+    const shown =
+      process.env.NODE_ENV === "development"
+        ? to
+        : `${to.slice(0, 2)}…@${to.split("@")[1] ?? ""}`;
+    console.info(`[notifications] email → ${shown}: ${subject}`);
     return { ok: true, provider: "log", messageId: `log_${Date.now()}` };
   },
 };

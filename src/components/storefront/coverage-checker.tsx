@@ -36,7 +36,7 @@ export function CoverageChecker({ className }: { className?: string }) {
           <MapPinIcon aria-hidden className="size-5" />
         </span>
         <div>
-          <h3 className="font-serif text-xl font-semibold">Do we deliver to you?</h3>
+          <h2 className="font-serif text-xl font-semibold">Do we deliver to you?</h2>
           <p className="text-sm text-muted-foreground">
             Type your barangay or city to check coverage, fees and cutoffs.
           </p>

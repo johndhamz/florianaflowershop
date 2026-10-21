@@ -25,7 +25,7 @@ export async function generateMetadata({
     product.seoDescription ??
     product.shortDescription ??
     product.description?.slice(0, 155) ??
-    undefined;
+    `${product.name} from Floriana Flowers — fresh flowers delivered across Cebu.`;
   return {
     title: product.seoTitle ?? product.name,
     description,

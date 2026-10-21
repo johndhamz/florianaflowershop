@@ -26,11 +26,12 @@ export async function settleMockPayment(
     body: rawBody,
   });
   if (!res.ok) return { ok: false, error: `Webhook delivery failed (${res.status}).` };
-  // Simulate a duplicate delivery (PayMongo retries): must be a no-op.
-  await fetch(`${env.NEXT_PUBLIC_SITE_URL}/api/webhooks/paymongo`, {
+  // Simulate a duplicate delivery (PayMongo retries): must be a no-op. Best effort —
+  // the first delivery already settled the order, so a network error here is not a failure.
+  await fetch(`${origin}/api/webhooks/paymongo`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Paymongo-Signature": signature },
     body: rawBody,
-  });
+  }).catch(() => undefined);
   return { ok: true };
 }

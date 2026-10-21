@@ -2530,6 +2530,23 @@ export type Database = {
         Args: { p_batch_id: string; p_delta: number; p_reason: string };
         Returns: Json;
       };
+      admin_orders_list: {
+        Args: { p_limit?: number; p_query?: string; p_status?: string };
+        Returns: {
+          customer_name: string;
+          delivery_date: string;
+          delivery_status: Database["public"]["Enums"]["delivery_status"];
+          fulfillment_status: Database["public"]["Enums"]["fulfillment_status"];
+          item_count: number;
+          order_id: string;
+          order_number: string;
+          payment_status: Database["public"]["Enums"]["payment_status"];
+          placed_at: string;
+          status: Database["public"]["Enums"]["order_status"];
+          total_centavos: number;
+          zone_name: string;
+        }[];
+      };
       apply_substitution: {
         Args: {
           p_from_material_id: string;
@@ -2884,6 +2901,14 @@ export type Database = {
         Returns: Json;
       };
       rider_deliveries: { Args: { p_include_done?: boolean }; Returns: Json };
+      run_retention: {
+        Args: {
+          p_cart_days?: number;
+          p_delivery_proof_days?: number;
+          p_notification_days?: number;
+        };
+        Returns: Json;
+      };
       set_slot_capacity: {
         Args: {
           p_blocked?: boolean;

@@ -21,10 +21,13 @@ export function assertCentavos(value: unknown): asserts value is Centavos {
   }
 }
 
-/** 123450 → "₱1,234.50" */
+/** 123450 → "₱1,234.50"; negative values (net figures in reports) render as "−₱1,234.50". */
 export function formatCentavos(centavos: Centavos): string {
-  assertCentavos(centavos);
-  return formatter.format(centavos / 100);
+  if (typeof centavos !== "number" || !Number.isInteger(centavos)) {
+    throw new TypeError(`Expected integer centavos, received ${String(centavos)}`);
+  }
+  const formatted = formatter.format(Math.abs(centavos) / 100);
+  return centavos < 0 ? `−${formatted}` : formatted;
 }
 
 /** "1234.5" | 1234.5 → 123450 (rounded to the nearest centavo). */

@@ -30,7 +30,6 @@ export function Logo({
         "group/logo inline-flex flex-col rounded-md leading-none outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
         className,
       )}
-      aria-label={`${siteConfig.name} home`}
     >
       <span
         className={cn(

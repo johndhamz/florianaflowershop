@@ -62,6 +62,7 @@ export default async function OccasionPage({
         lock="occasion"
         resultCount={page.total}
       />
+      <h2 className="sr-only">Products</h2>
       <ProductGrid products={page.items} resetHref={basePath} />
       <Pagination params={query} pageCount={page.pageCount} basePath={basePath} />
     </Container>

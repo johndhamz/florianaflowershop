@@ -1,0 +1,58 @@
+name: Deploy database
+
+# Manual, audited path for applying migrations to a hosted Supabase project.
+# 1. "Dry run" prints the migrations that would be applied.
+# 2. "Apply" pushes them. Vercel deploys the app separately (git push → Vercel).
+# Order matters: additive migrations go first, then the app build that uses them.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Target project
+        type: choice
+        options: [staging, production]
+        required: true
+      mode:
+        description: Dry run (list pending migrations) or apply
+        type: choice
+        options: [dry-run, apply]
+        default: dry-run
+        required: true
+
+concurrency:
+  group: deploy-db-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target }}
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Prove migrations apply from scratch (local stack)
+        run: |
+          npx supabase start
+          npx supabase db lint --level warning
+          npx supabase test db
+      - name: Link project
+        run: npx supabase link --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Pending migrations
+        run: npx supabase migration list --linked
+      - name: Dry run
+        if: inputs.mode == 'dry-run'
+        run: npx supabase db push --linked --dry-run
+      - name: Apply migrations
+        if: inputs.mode == 'apply'
+        run: npx supabase db push --linked
+      - name: Verify
+        if: inputs.mode == 'apply'
+        run: npx supabase migration list --linked
